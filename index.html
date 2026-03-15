@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>МонголHotels — Монголын Тансаг Зочид Буудлууд</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@200;300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-dot" id="cur-dot"></div>
+<div id="scroll-progress"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo" onclick="closeDetail()">
+    <div class="logo-gem">🏔</div>
+    <div><div class="logo-name">МонголHotels</div><div class="logo-sub">Mongolia's Finest</div></div>
+  </div>
+  <div class="nav-links">
+    <a href="#hotels-sec" onclick="closeDetail()">Буудлууд</a>
+    <a href="#" onclick="openModal('check-modal')">Захиалга шалгах</a>
+    <a href="#feats-sec">Үйлчилгээ</a>
+    <a href="admin/index.html" target="_blank">Admin ↗</a>
+  </div>
+  <div class="nav-actions" id="nav-actions">
+    <button class="npill npill-out" onclick="openModal('login-modal')" id="nav-login">Нэвтрэх</button>
+    <button class="npill npill-fill" onclick="openModal('reg-modal')" id="nav-reg">Бүртгүүлэх</button>
+    <div class="ucap" id="nav-user" style="display:none">
+      <div class="ucap-av" id="nav-av">?</div>
+      <span class="ucap-name" id="nav-nm"></span>
+      <button class="icon-btn" onclick="openModal('mybk-modal');loadMyBk()">📋</button>
+      <button class="icon-btn" onclick="doLogout()">⬡</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div id="hero-slides">
+    <div class="hero-slide on" style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=85')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1551882547-ff40c63fe2e2?w=1920&q=85')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1920&q=85')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1920&q=85')"></div>
+  </div>
+  <div class="hero-vignette"></div>
+  <div class="hero-particles" id="hpts"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><div class="heb-line"></div><span class="heb-text">Монголын Тансаглалын Нэгдсэн Платформ</span><div class="heb-line"></div></div>
+    <h1>Нутаг нэгтний<br><em>тансаг орон</em></h1>
+    <p class="hero-desc">Улаанбаатарын шилдэг 4 зочид буудал нэг дор. QPay, SocialPay, MonPay — Монгол төлбөрийн бүрэн дэмжлэг. Gmail OTP баталгаажуулалт.</p>
+    <div class="hero-badges">
+      <div class="hbadge"><span class="hb-ic">🏨</span><div class="hb-txt"><strong>4 Буудал</strong><span>Нэг системд</span></div></div>
+      <div class="hbadge"><span class="hb-ic">⬡</span><div class="hb-txt"><strong>QPay & SocialPay</strong><span>Монгол QR төлбөр</span></div></div>
+      <div class="hbadge"><span class="hb-ic">📧</span><div class="hb-txt"><strong>Gmail OTP</strong><span>Найдвартай нэвтрэлт</span></div></div>
+    </div>
+  </div>
+  <div class="slide-dots" id="slide-dots">
+    <div class="sdot on" onclick="goSlide(0)"></div><div class="sdot" onclick="goSlide(1)"></div>
+    <div class="sdot" onclick="goSlide(2)"></div><div class="sdot" onclick="goSlide(3)"></div>
+  </div>
+  <div class="scroll-hint"><div class="sh-text">Scroll</div><div class="sh-line"></div></div>
+</section>
+
+<!-- SEARCH DOCK -->
+<div class="search-dock">
+  <div class="search-glass">
+    <div class="sf"><span class="sf-label">Буудал</span>
+      <select id="s-hotel">
+        <option value="">Бүх буудлууд</option>
+        <option value="1">Шангрила Улаанбаатар</option>
+        <option value="2">Блю Скай Зочид Буудал</option>
+        <option value="3">Кемпинский Улаанбаатар</option>
+        <option value="4">Өргөө Бутик Буудал</option>
+      </select>
+    </div>
+    <div class="sf"><span class="sf-label">Ирэх огноо</span><input type="date" id="bm-in" onchange="calcPrice()"></div>
+    <div class="sf"><span class="sf-label">Явах огноо</span><input type="date" id="bm-out" onchange="calcPrice()"></div>
+    <div class="sf"><span class="sf-label">Зочид</span>
+      <select id="s-guests">
+        <option value="1">1 хүн</option><option value="2" selected>2 хүн</option>
+        <option value="3">3 хүн</option><option value="4">4 хүн</option>
+      </select>
+    </div>
+    <button class="search-go" onclick="doSearch()">Хайх →</button>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker" style="margin-top:76px">
+  <div class="ticker-inner">
+    <div class="titem"><span class="ti-n">4</span><span class="ti-l">Тансаг Буудал</span></div>
+    <div class="titem"><span class="ti-n">5★</span><span class="ti-l">Олон Улсын Зэрэглэл</span></div>
+    <div class="titem"><span class="ti-n">200+</span><span class="ti-l">Тохилог Өрөө</span></div>
+    <div class="titem"><span class="ti-n">QPay</span><span class="ti-l">Монгол QR Төлбөр</span></div>
+    <div class="titem"><span class="ti-n">24/7</span><span class="ti-l">Тасралтгүй Үйлчилгээ</span></div>
+    <div class="titem"><span class="ti-n">10K+</span><span class="ti-l">Сэтгэл Хангалуун Зочид</span></div>
+    <div class="titem"><span class="ti-n">OTP</span><span class="ti-l">Gmail Баталгаажуулалт</span></div>
+    <div class="titem"><span class="ti-n">4</span><span class="ti-l">Тансаг Буудал</span></div>
+    <div class="titem"><span class="ti-n">5★</span><span class="ti-l">Олон Улсын Зэрэглэл</span></div>
+    <div class="titem"><span class="ti-n">200+</span><span class="ti-l">Тохилог Өрөө</span></div>
+    <div class="titem"><span class="ti-n">QPay</span><span class="ti-l">Монгол QR Төлбөр</span></div>
+    <div class="titem"><span class="ti-n">24/7</span><span class="ti-l">Тасралтгүй Үйлчилгээ</span></div>
+    <div class="titem"><span class="ti-n">10K+</span><span class="ti-l">Сэтгэл Хангалуун Зочид</span></div>
+    <div class="titem"><span class="ti-n">OTP</span><span class="ti-l">Gmail Баталгаажуулалт</span></div>
+  </div>
+</div>
+
+<!-- HOTELS -->
+<section id="hotels-sec">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:52px;flex-wrap:wrap;gap:18px" class="reveal">
+      <div>
+        <div class="stag">Манай Буудлуудаас Сонгоно Уу</div>
+        <h2 class="stitle">Улаанбаатарын<br><em>дээд зэрэглэлийн</em> буудлууд</h2>
+      </div>
+      <div style="font-size:12px;color:var(--mist)" id="hcount"></div>
+    </div>
+    <div class="hotels-grid" id="hotels-grid">
+      <div class="load-row"><div class="spin"></div> Буудлуудыг ачааллаж байна...</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="feats-sec" style="padding:0">
+  <div class="feats">
+    <div class="fcell reveal"><div class="fnum">01</div><div class="ficon">📧</div><div class="ftitle">Gmail OTP Нэвтрэлт</div><div class="fdesc">Нууц үг мартах шаардлагагүй. 6 оронтой нэг удаагийн код таны Gmail-д очно. 10 минут хугацаатай, аюулгүй rate-limited.</div></div>
+    <div class="fcell reveal" style="transition-delay:.1s"><div class="fnum">02</div><div class="ficon">⬡</div><div class="ftitle">QPay QR Төлбөр</div><div class="fdesc">Монголын бүх банкны QPay QR кодоор шууд төлнө. Хаан, Голомт, ТДБ, Хас банкны аппаас нэг дорхон уншуулна.</div></div>
+    <div class="fcell reveal" style="transition-delay:.2s"><div class="fnum">03</div><div class="ficon">🏨</div><div class="ftitle">Multi-Hotel Систем</div><div class="fdesc">Нэг бүртгэлээр 4 буудалд захиалга хийнэ. Бүх захиалгаа нэг дашборд дотроос удирдана. Loyalty оноо цуглуулна.</div></div>
+    <div class="fcell reveal" style="transition-delay:.3s"><div class="fnum">04</div><div class="ficon">🎫</div><div class="ftitle">Купон & Хөнгөлөлт</div><div class="fdesc">MONGOL2024 (15%), WELCOME10 (10%), SUMMER50000 кодуудыг ашиглана уу. Loyalty оноогоор нэмэлт хөнгөлөлт авна.</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <div class="logo"><div class="logo-gem">🏔</div><div><div class="logo-name">МонголHotels</div><div class="logo-sub">Mongolia's Finest</div></div></div>
+      <p>Монголын нийслэл Улаанбаатарын шилдэг 4 зочид буудлын нэгдсэн онлайн захиалгын платформ. Тансаглал, тав тух, монгол зочломтгой байдал.</p>
+      <div class="foot-pay" style="margin-top:14px">
+        <span class="fpi">⬡ QPay</span><span class="fpi">💬 SocialPay</span>
+        <span class="fpi">📲 MonPay</span><span class="fpi">🏦 Khan Bank</span><span class="fpi">🏛 Golomt</span>
+      </div>
+    </div>
+    <div class="foot-col"><h5>Буудлууд</h5><a>Шангрила Улаанбаатар</a><a>Блю Скай Буудал</a><a>Кемпинский УБ</a><a>Өргөө Бутик</a></div>
+    <div class="foot-col"><h5>Үйлчилгээ</h5><a>Спа & Велнесс</a><a>Ресторан & Бар</a><a>Хурлын Танхим</a><a>Нисэх Буудал Шилжүүлэг</a></div>
+    <div class="foot-col"><h5>Холбоо Барих</h5>
+      <a href="tel:+97677001234">📞 +976 7700-1234</a>
+      <a href="/cdn-cgi/l/email-protection#6e060b0202012e03010009010206011a0b021d400300">✉️ <span class="__cf_email__" data-cfemail="066e636a6a69466b696861696a6e6972636a75286b68">[email&#160;protected]</span></a>
+      <a>📍 Улаанбаатар, Монгол</a>
+      <a href="admin/index.html" target="_blank">🔧 Admin панел →</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2024 МонголHotels. Бүх эрх хуулиар хамгаалагдсан.</span>
+    <span>PHP + MySQL · Gmail OTP · QPay Integration</span>
+  </div>
+</footer>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-ov" id="det-ov">
+  <div class="dh" id="dh">
+    <img id="dh-img" src="" alt="">
+    <div class="dh-grad"></div>
+    <button class="dh-back" onclick="closeDetail()">← Буцах</button>
+    <div class="dh-info">
+      <div>
+        <div id="dh-stars" style="font-size:13px;margin-bottom:8px"></div>
+        <h1 class="dh-name" id="dh-name"></h1>
+        <div class="dh-loc" id="dh-loc"></div>
+      </div>
+      <div class="dh-rbox" id="dh-rbox"></div>
+    </div>
+  </div>
+  <div class="det-body" id="det-body"><div class="load-row"><div class="spin"></div></div></div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-stack" id="toasts"></div>
+
+<!-- ══════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════ -->
+<!-- LOGIN -->
+<div class="mlayer" id="login-modal">
+  <div class="modal">
+    <button class="mcl" onclick="closeModal('login-modal')">✕</button>
+    <div id="ls1">
+      <h2 class="mtitle">Нэвтрэх</h2>
+      <p class="msub">Gmail OTP кодоор найдвартай нэвтэрнэ үү</p>
+      <div id="l-alert"></div>
+      <label class="flabel">Gmail Хаяг</label>
+      <input class="finput" type="email" id="l-email" placeholder="example@gmail.com">
+      <label class="flabel">Нууц үг (хэрэв тохируулсан)</label>
+      <input class="finput" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')sendLoginOtp()">
+      <button class="mbtn" onclick="sendLoginOtp()">Gmail OTP Код Авах →</button>
+      <div class="mlink">Бүртгэлгүй юу? <a onclick="switchModal('login-modal','reg-modal')">Бүртгүүлэх</a></div>
+    </div>
+    <div id="ls2" style="display:none">
+      <h2 class="mtitle">Код Оруулах</h2>
+      <p class="msub">Gmail-д илгээсэн 6 оронтой кодоо оруулна уу</p>
+      <div class="otp-badge" id="l-otp-email"></div>
+      <div id="l-otp-alert"></div>
+      <div class="otp-row">
+        <input class="od" maxlength="1" id="l0" inputmode="numeric" oninput="oNext(this,'l1')">
+        <input class="od" maxlength="1" id="l1" inputmode="numeric" oninput="oNext(this,'l2')">
+        <input class="od" maxlength="1" id="l2" inputmode="numeric" oninput="oNext(this,'l3')">
+        <input class="od" maxlength="1" id="l3" inputmode="numeric" oninput="oNext(this,'l4')">
+        <input class="od" maxlength="1" id="l4" inputmode="numeric" oninput="oNext(this,'l5')">
+        <input class="od" maxlength="1" id="l5" inputmode="numeric" onkeyup="if(this.value)verifyLoginOtp()">
+      </div>
+      <div class="otp-timer">⏳ <span id="l-cd">10:00</span> &nbsp;<span class="otp-resend" id="l-resend" onclick="sendLoginOtp(true)">Дахин илгээх</span></div>
+      <button class="mbtn" onclick="verifyLoginOtp()">Нэвтрэх</button>
+      <div class="mlink"><a onclick="sStep('ls1','ls2')">← Буцах</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="mlayer" id="reg-modal">
+  <div class="modal">
+    <button class="mcl" onclick="closeModal('reg-modal')">✕</button>
+    <div id="rs1">
+      <h2 class="mtitle">Бүртгүүлэх</h2>
+      <p class="msub">МонголHotels-д тавтай морилно уу</p>
+      <div id="r-alert"></div>
+      <div class="frow">
+        <div><label class="flabel">Нэр</label><input class="finput" id="r-first" placeholder="Батбаяр"></div>
+        <div><label class="flabel">Овог</label><input class="finput" id="r-last" placeholder="Дорж"></div>
+      </div>
+      <label class="flabel">Gmail Хаяг</label>
+      <input class="finput" type="email" id="r-email" placeholder="example@gmail.com">
+      <label class="flabel">Утасны Дугаар</label>
+      <input class="finput" type="tel" id="r-phone" placeholder="+976 9900 1234">
+      <label class="flabel">Нууц Үг (заавал биш)</label>
+      <input class="finput" type="password" id="r-pass" placeholder="6+ тэмдэгт">
+      <button class="mbtn" onclick="sendRegOtp()">Gmail OTP Код Авах →</button>
+      <div class="mlink">Бүртгэлтэй юу? <a onclick="switchModal('reg-modal','login-modal')">Нэвтрэх</a></div>
+    </div>
+    <div id="rs2" style="display:none">
+      <h2 class="mtitle">Gmail Баталгаажуулах</h2>
+      <p class="msub">Таны Gmail-д 6 оронтой нэг удаагийн код илгээлээ</p>
+      <div class="otp-badge" id="r-otp-email"></div>
+      <div id="r-otp-alert"></div>
+      <div class="otp-row">
+        <input class="od" maxlength="1" id="r0" inputmode="numeric" oninput="oNext(this,'r1')">
+        <input class="od" maxlength="1" id="r1" inputmode="numeric" oninput="oNext(this,'r2')">
+        <input class="od" maxlength="1" id="r2" inputmode="numeric" oninput="oNext(this,'r3')">
+        <input class="od" maxlength="1" id="r3" inputmode="numeric" oninput="oNext(this,'r4')">
+        <input class="od" maxlength="1" id="r4" inputmode="numeric" oninput="oNext(this,'r5')">
+        <input class="od" maxlength="1" id="r5" inputmode="numeric" onkeyup="if(this.value)verifyRegOtp()">
+      </div>
+      <div class="otp-timer">⏳ <span id="r-cd">10:00</span> &nbsp;<span class="otp-resend" id="r-resend" onclick="sendRegOtp(true)">Дахин илгээх</span></div>
+      <button class="mbtn" onclick="verifyRegOtp()">Бүртгэл Үүсгэх</button>
+      <div class="mlink"><a onclick="sStep('rs1','rs2')">← Буцах</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECK BOOKING -->
+<div class="mlayer" id="check-modal">
+  <div class="modal">
+    <button class="mcl" onclick="closeModal('check-modal')">✕</button>
+    <h2 class="mtitle">Захиалга Шалгах</h2>
+    <p class="msub">Захиалгын кодоороо өөрийн захиалгын дэлгэрэнгүйг харах</p>
+    <div id="chk-alert"></div>
+    <label class="flabel">Захиалгын Код</label>
+    <input class="finput" id="chk-code" placeholder="MH241225XXXXX" style="text-transform:uppercase;letter-spacing:2px;font-family:'DM Mono',monospace" onkeydown="if(event.key==='Enter')doCheckBk()">
+    <button class="mbtn" onclick="doCheckBk()">Шалгах →</button>
+    <div id="chk-result" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- MY BOOKINGS -->
+<div class="mlayer" id="mybk-modal">
+  <div class="modal wide">
+    <button class="mcl" onclick="closeModal('mybk-modal')">✕</button>
+    <h2 class="mtitle">Миний Захиалгууд</h2>
+    <p class="msub">Таны бүх захиалгын жагсаалт</p>
+    <div id="mybk-list"><div class="load-row"><div class="spin"></div></div></div>
+  </div>
+</div>
+
+<!-- BOOKING -->
+<div class="mlayer" id="book-modal">
+  <div class="modal xwide">
+    <button class="mcl" onclick="closeModal('book-modal')">✕</button>
+    <div class="bm-header">
+      <img id="bm-img" class="bm-rimg" src="" alt="">
+      <div><div class="bm-hotel" id="bm-hname"></div><div class="bm-rname" id="bm-rname"></div><div class="bm-rmeta" id="bm-rmeta"></div></div>
+    </div>
+    <div id="bm-alert"></div>
+    <div class="frow">
+      <div><label class="flabel">Ирэх Огноо</label><input class="finput" type="date" id="bm-in" onchange="calcPrice()"></div>
+      <div><label class="flabel">Явах Огноо</label><input class="finput" type="date" id="bm-out" onchange="calcPrice()"></div>
+    </div>
+    <div class="frow">
+      <div><label class="flabel">Насанд Хүрсэн</label><select class="finput" id="bm-adults"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option></select></div>
+      <div><label class="flabel">Хүүхэд</label><select class="finput" id="bm-children"><option value="0" selected>0</option><option value="1">1</option><option value="2">2</option></select></div>
+    </div>
+    <label class="flabel">Нэмэлт Үйлчилгээ</label>
+    <div class="svc-grid" id="bm-svcs"></div>
+    <label class="flabel">Купон Код</label>
+    <div class="promo-row">
+      <input class="finput" id="bm-promo" placeholder="MONGOL2024" style="margin:0;flex:1">
+      <button class="promo-go" onclick="applyPromo()">Хэрэглэх</button>
+    </div>
+    <div id="promo-res"></div>
+    <label class="flabel" style="margin-top:13px">Тусгай Хүсэлт</label>
+    <textarea class="finput" id="bm-special" rows="2" placeholder="Дээд давхар, ор тусдаа гэх мэт..." style="resize:vertical;margin-bottom:0"></textarea>
+    <div class="pbd" id="pbd" style="display:none">
+      <div class="pbd-row"><span>Өрөөний үнэ</span><span id="pb-room">—</span></div>
+      <div class="pbd-row" id="pb-drow" style="display:none"><span>🎁 Хөнгөлөлт</span><span class="gold" id="pb-disc">—</span></div>
+      <div class="pbd-row" id="pb-srow" style="display:none"><span>Нэмэлт үйлчилгээ</span><span id="pb-svc">—</span></div>
+      <div class="pbd-row"><span>НӨАТ 10%</span><span id="pb-tax">—</span></div>
+      <div class="pbd-row"><span>Нийт Дүн</span><span class="gold" id="pb-total">—</span></div>
+    </div>
+    <button class="mbtn" onclick="doBook()" style="margin-top:14px">Захиалга Үүсгэх →</button>
+  </div>
+</div>
+
+<!-- PAYMENT -->
+<div class="mlayer" id="pay-modal">
+  <div class="modal xwide">
+    <button class="mcl" onclick="closeModal('pay-modal')">✕</button>
+    <h2 class="mtitle">Төлбөр Хийх</h2>
+    <p class="msub">Захиалга: <span id="pm-code" style="color:var(--gold);font-family:'DM Mono',monospace"></span> &nbsp;·&nbsp; Нийт: <span id="pm-amt" style="color:var(--white);font-weight:600"></span></p>
+
+    <div class="pstep on" id="ps1">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mist);margin-bottom:11px">Монгол Төлбөрийн Хэрэгсэл</div>
+      <div class="pm-grid">
+        <div class="pmb" onclick="selM('qpay',this)"><div class="pmb-ic">⬡</div><div class="pmb-n">QPay</div><div class="pmb-s">Бүх банкны QR</div></div>
+        <div class="pmb" onclick="selM('socialpay',this)"><div class="pmb-ic">💬</div><div class="pmb-n">SocialPay</div><div class="pmb-s">Khan Bank апп</div></div>
+        <div class="pmb" onclick="selM('monpay',this)"><div class="pmb-ic">📲</div><div class="pmb-n">MonPay</div><div class="pmb-s">Most Money апп</div></div>
+        <div class="pmb" onclick="selM('khanbank',this)"><div class="pmb-ic">🏦</div><div class="pmb-n">Хаан Банк</div><div class="pmb-s">Шилжүүлэг</div></div>
+        <div class="pmb" onclick="selM('golomtbank',this)"><div class="pmb-ic">🏛</div><div class="pmb-n">Голомт Банк</div><div class="pmb-s">Шилжүүлэг</div></div>
+        <div class="pmb" onclick="selM('tdbbank',this)"><div class="pmb-ic">🏢</div><div class="pmb-n">ТДБ Банк</div><div class="pmb-s">Шилжүүлэг</div></div>
+      </div>
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mist);margin-bottom:11px">Бусад</div>
+      <div class="pm-grid" style="grid-template-columns:1fr 1fr">
+        <div class="pmb" onclick="selM('cash',this)"><div class="pmb-ic">💵</div><div class="pmb-n">Бэлэн Мөнгө</div><div class="pmb-s">Буудалд ирэхэд</div></div>
+        <div class="pmb" onclick="selM('card',this)"><div class="pmb-ic">💳</div><div class="pmb-n">Карт</div><div class="pmb-s">Буудалд уншуулах</div></div>
+      </div>
+      <button class="mbtn" onclick="proceedPay()">Үргэлжлэх →</button>
+    </div>
+
+    <div class="pstep" id="ps-qpay">
+      <div class="qc">
+        <div class="q-amt" id="qamt"></div>
+        <div class="q-sub">QPay-гаар төлөх дүн (MNT)</div>
+        <div class="qr-box"><canvas id="qr-cv" width="176" height="176"></canvas></div>
+        <p style="font-size:12px;color:var(--mist);margin-bottom:14px">Доорх банкны аппаар уншуулна уу</p>
+        <div class="blinks" id="blinks"></div>
+        <div class="pstatus"><div class="spin" style="width:15px;height:15px"></div><span>Төлбөрийг хүлээж байна...</span></div>
+        <button class="pchk" onclick="chkNow()">✓ Төлбөр Шалгах</button>
+      </div>
+    </div>
+
+    <div class="pstep" id="ps-bank">
+      <p style="font-size:13px;color:var(--text);margin-bottom:16px;line-height:1.8">Доорх дансруу шилжүүлэг хийнэ үү. Гүйлгээний утгад захиалгын кодоо оруулна уу.</p>
+      <div class="binfo" id="binfo"></div>
+      <label class="flabel" style="margin-top:16px">Гүйлгээний Дугаар / Лавлагаа</label>
+      <input class="finput" id="bank-ref" placeholder="Гүйлгээний дугаараа оруулна уу">
+      <button class="mbtn" onclick="confirmBank()">Баталгаажуулах →</button>
+    </div>
+
+    <div class="pstep" id="ps-mobile">
+      <div class="mob-box">
+        <div class="mob-ic" id="mob-ic"></div>
+        <div class="mob-amt" id="mob-amt"></div>
+        <div class="mob-desc" id="mob-desc"></div>
+        <div class="merch-box"><div class="merch-lbl">Мерчантын нэр</div><div class="merch-val">MONGOHOTELS</div></div>
+        <button class="mbtn" onclick="confirmMob()">Апп-д Төлсөн →</button>
+      </div>
+    </div>
+
+    <div class="pstep" id="ps-onsite">
+      <div class="mob-box">
+        <div class="mob-ic" id="on-ic"></div>
+        <div class="mob-amt" id="on-amt"></div>
+        <div class="mob-desc" id="on-desc"></div>
+        <div class="alert al-g">ℹ️ Захиалгын кодыг хүлээн авах ширээнд өгнө үү. Таны захиалга хадгалагдлаа.</div>
+        <button class="mbtn" onclick="finishOn()" style="margin-top:14px">Ойлголоо, Дуусгах →</button>
+      </div>
+    </div>
+
+    <div class="pstep" id="ps-succ">
+      <div class="succ-box">
+        <div class="succ-ic">🎉</div>
+        <div class="succ-title">Амжилттай!</div>
+        <div class="succ-sub">Захиалга амжилттай баталгаажлаа. Доорх кодыг хадгалаарай.</div>
+        <div class="code-box"><div class="cb-lbl">Таны Захиалгын Код</div><div class="cb-code" id="s-code"></div></div>
+        <button class="mbtn" onclick="closeModal('pay-modal');openModal('mybk-modal');loadMyBk()">Миний Захиалгууд →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
