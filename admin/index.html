@@ -26,7 +26,7 @@ button,input,select,textarea{font-family:'Outfit',sans-serif}
 .sb-brand-name{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--white);font-weight:600}
 .sb-brand-sub{font-size:9px;color:var(--gold);letter-spacing:2px;text-transform:uppercase}
 .sb-body{flex:1;overflow-y:auto;padding:12px 10px}
-.sb-hotel{width:100%;background:rgba(212,168,67,0.06);border:var(--cb);border-style:solid;color:var(--text);padding:9px 12px;border-radius:var(--r);font-size:12px;outline:none;margin-bottom:10px;cursor:pointer}
+.sb-hotel{width:100%;background:rgba(212,168,67,0.06);border:var(--cb);color:var(--text);padding:9px 12px;border-radius:var(--r);font-size:12px;outline:none;margin-bottom:10px;cursor:pointer}
 .nav-btn{display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--r);cursor:pointer;transition:all .2s;border:none;background:none;width:100%;color:var(--muted);font-size:13px;text-align:left;white-space:nowrap}
 .nav-btn:hover{background:rgba(212,168,67,.07);color:var(--text)}
 .nav-btn.active{background:rgba(212,168,67,.12);color:var(--gold)}
@@ -43,12 +43,11 @@ button,input,select,textarea{font-family:'Outfit',sans-serif}
 .topbar-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--white)}
 .topbar-right{display:flex;align-items:center;gap:12px}
 .tb-date{font-size:12px;color:var(--muted)}
-.tb-btn{background:rgba(212,168,67,.08);border:var(--cb);border-style:solid;color:var(--gold);padding:7px 16px;border-radius:50px;font-size:12px;cursor:pointer;transition:all .2s}
+.tb-btn{background:rgba(212,168,67,.08);border:var(--cb);color:var(--gold);padding:7px 16px;border-radius:50px;font-size:12px;cursor:pointer;transition:all .2s}
 .tb-btn:hover{background:rgba(212,168,67,.18)}
 .content{flex:1;overflow-y:auto;padding:24px 28px}
 
-.page{display:none}
-.page.active{display:block;animation:fadein .25s ease}
+.page{display:none}.page.active{display:block;animation:fadein .25s ease}
 @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
@@ -59,18 +58,18 @@ button,input,select,textarea{font-family:'Outfit',sans-serif}
 .sc-value{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;line-height:1;margin-bottom:6px}
 .sc-sub{font-size:11px;color:var(--muted)}
 .sc-bar{height:3px;border-radius:2px;margin-top:12px;opacity:.5}
-.sc-gold .sc-value{color:var(--gold)} .sc-gold .sc-bar{background:var(--gold)}
-.sc-green .sc-value{color:var(--green)} .sc-green .sc-bar{background:var(--green)}
-.sc-blue .sc-value{color:var(--blue)} .sc-blue .sc-bar{background:var(--blue)}
-.sc-amber .sc-value{color:var(--amber)} .sc-amber .sc-bar{background:var(--amber)}
+.sc-gold .sc-value{color:var(--gold)}.sc-gold .sc-bar{background:var(--gold)}
+.sc-green .sc-value{color:var(--green)}.sc-green .sc-bar{background:var(--green)}
+.sc-blue .sc-value{color:var(--blue)}.sc-blue .sc-bar{background:var(--blue)}
+.sc-amber .sc-value{color:var(--amber)}.sc-amber .sc-bar{background:var(--amber)}
 
 .card{background:var(--bg2);border:var(--cb);border-radius:var(--r2);overflow:hidden;margin-bottom:20px}
 .card-head{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:var(--cb);flex-wrap:wrap;gap:10px}
 .card-head h3{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--white)}
 .card-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.ti{background:rgba(255,255,255,.04);border:var(--cb);border-style:solid;color:var(--text);padding:7px 12px;border-radius:var(--r);font-size:12px;outline:none;transition:border-color .2s}
+.ti{background:rgba(255,255,255,.04);border:var(--cb);color:var(--text);padding:7px 12px;border-radius:var(--r);font-size:12px;outline:none;transition:border-color .2s}
 .ti:focus{border-color:var(--gold);color:var(--white)}
-.ts-sel{background:var(--bg3);border:var(--cb);border-style:solid;color:var(--text);padding:7px 10px;border-radius:var(--r);font-size:12px;outline:none;cursor:pointer}
+.ts-sel{background:var(--bg3);border:var(--cb);color:var(--text);padding:7px 10px;border-radius:var(--r);font-size:12px;outline:none;cursor:pointer}
 
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;min-width:600px}
@@ -85,7 +84,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .bm{background:rgba(255,255,255,.07);color:var(--muted)}
 .br{background:rgba(220,85,85,.15);color:var(--red)}
 .ba{background:rgba(232,148,58,.15);color:var(--amber)}
-.ab{background:none;border:1px solid rgba(255,255,255,.1);border-style:solid;color:var(--text);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;transition:all .2s;font-family:'Outfit',sans-serif;white-space:nowrap}
+.ab{background:none;border:1px solid rgba(255,255,255,.1);color:var(--text);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;transition:all .2s;font-family:'Outfit',sans-serif;white-space:nowrap}
 .ab:hover{border-color:var(--gold);color:var(--gold)}
 .ab.g{color:var(--green);border-color:rgba(60,179,113,.3)}.ab.g:hover{background:rgba(60,179,113,.1)}
 .ab.b{color:var(--blue);border-color:rgba(74,143,212,.3)}.ab.b:hover{background:rgba(74,143,212,.1)}
@@ -120,17 +119,17 @@ tr:hover td{background:rgba(255,255,255,.015)}
 
 /* LOGIN */
 .login-wrap{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;background-image:radial-gradient(ellipse at 20% 50%,rgba(212,168,67,.04) 0%,transparent 50%)}
-.login-card{background:var(--bg2);border:1px solid rgba(212,168,67,.2);border-style:solid;border-radius:22px;padding:52px 44px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.login-card{background:var(--bg2);border:1px solid rgba(212,168,67,.2);border-radius:22px;padding:52px 44px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,.6)}
 .lc-icon{font-size:52px;text-align:center;margin-bottom:16px}
 .lc-title{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--white);text-align:center;margin-bottom:4px}
 .lc-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:32px}
 .lc-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
-.lc-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,168,67,.15);border-style:solid;color:var(--white);padding:13px 16px;border-radius:var(--r);font-size:14px;outline:none;margin-bottom:16px;transition:border-color .2s}
+.lc-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,168,67,.15);color:var(--white);padding:13px 16px;border-radius:var(--r);font-size:14px;outline:none;margin-bottom:16px;transition:border-color .2s}
 .lc-input:focus{border-color:var(--gold)}
 .lc-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold3));color:var(--bg);padding:14px;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;border:none;transition:filter .2s;margin-top:4px}
 .lc-btn:hover{filter:brightness(1.08)}
 .lc-demo{text-align:center;font-size:11px;color:var(--muted);margin-top:14px}
-.lc-err{background:rgba(220,85,85,.12);border:1px solid rgba(220,85,85,.3);border-style:solid;color:#ee8888;padding:11px 14px;border-radius:var(--r);font-size:12px;margin-bottom:12px;display:none}
+.lc-err{background:rgba(220,85,85,.12);border:1px solid rgba(220,85,85,.3);color:#ee8888;padding:11px 14px;border-radius:var(--r);font-size:12px;margin-bottom:12px;display:none}
 .lc-err.show{display:block}
 
 .toast-stack{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
@@ -140,19 +139,18 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .ts-i{border-color:var(--gold);color:var(--gold)}
 @keyframes tslide{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 
-@media(max-width:1100px){.stat-row{grid-template-columns:repeat(2,1fr)}.hotel-mini-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1200px){.stat-row{grid-template-columns:repeat(2,1fr)}.hotel-mini-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:900px){.sb{display:none}.charts-row{grid-template-columns:1fr}}
-@media(max-width:600px){.stat-row{grid-template-columns:1fr}.content{padding:16px}}
+@media(max-width:600px){.stat-row{grid-template-columns:1fr}.content{padding:16px}.hotel-mini-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div class="login-wrap" id="login-wrap">
   <div class="login-card">
     <div class="lc-icon">🏔</div>
     <div class="lc-title">МонголHotels</div>
-    <div class="lc-sub">Нэгдсэн Администраторын Систем</div>
+    <div class="lc-sub">Нэгдсэн Администраторын Систем · 8 Буудал</div>
     <div class="lc-err" id="la"></div>
     <label class="lc-label">Нэвтрэх нэр</label>
     <input class="lc-input" id="lu" placeholder="superadmin" value="superadmin">
@@ -163,14 +161,10 @@ tr:hover td{background:rgba(255,255,255,.015)}
   </div>
 </div>
 
-<!-- SIDEBAR -->
 <div class="sb">
   <div class="sb-logo">
     <div class="sb-mark">🏔</div>
-    <div>
-      <div class="sb-brand-name">МонголHotels</div>
-      <div class="sb-brand-sub">Admin Panel</div>
-    </div>
+    <div><div class="sb-brand-name">МонголHotels</div><div class="sb-brand-sub">Admin Panel</div></div>
   </div>
   <div class="sb-body">
     <select class="sb-hotel" id="hotel-sel" onchange="onHotelChange()">
@@ -179,6 +173,10 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <option value="2">🏢 Блю Скай</option>
       <option value="3">👑 Кемпинский</option>
       <option value="4">🌿 Өргөө Бутик</option>
+      <option value="5">🌐 Новотел</option>
+      <option value="6">🏛 Баянгол</option>
+      <option value="7">🐎 Чингис Хааны</option>
+      <option value="8">⭐ Рамада</option>
     </select>
     <button class="nav-btn active" onclick="goPage('dashboard',this)"><span class="nav-icon">📊</span>Хяналтын самбар</button>
     <button class="nav-btn" onclick="goPage('bookings',this)"><span class="nav-icon">📋</span>Захиалгууд</button>
@@ -191,16 +189,12 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="sb-foot">
     <div class="sb-user">
       <div class="sb-av" id="sb-av">A</div>
-      <div style="overflow:hidden;flex:1">
-        <div class="sb-uname" id="sb-name">Admin</div>
-        <div class="sb-urole" id="sb-role">super_admin</div>
-      </div>
+      <div style="overflow:hidden;flex:1"><div class="sb-uname" id="sb-name">Admin</div><div class="sb-urole" id="sb-role">super_admin</div></div>
     </div>
     <button class="nav-btn" style="color:var(--red)" onclick="doLogout()"><span class="nav-icon">🚪</span>Гарах</button>
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
   <div class="topbar">
     <div class="topbar-title" id="page-title">Хяналтын Самбар</div>
@@ -214,22 +208,14 @@ tr:hover td{background:rgba(255,255,255,.015)}
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="hotel-mini-grid">
-        <div class="hotel-mini" onclick="document.getElementById('hotel-sel').value='1';onHotelChange()">
-          <div class="hm-img"><img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=70" alt="" loading="lazy"></div>
-          <div class="hm-body"><div class="hm-name">Шангрила УБ</div><div class="hm-stat">⭐⭐⭐⭐⭐ · <span id="hm1">—</span> захиалга</div></div>
-        </div>
-        <div class="hotel-mini" onclick="document.getElementById('hotel-sel').value='2';onHotelChange()">
-          <div class="hm-img"><img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&q=70" alt="" loading="lazy"></div>
-          <div class="hm-body"><div class="hm-name">Блю Скай</div><div class="hm-stat">⭐⭐⭐⭐ · <span id="hm2">—</span> захиалга</div></div>
-        </div>
-        <div class="hotel-mini" onclick="document.getElementById('hotel-sel').value='3';onHotelChange()">
-          <div class="hm-img"><img src="https://images.unsplash.com/photo-1551882547-ff40c63fe2e2?w=400&q=70" alt="" loading="lazy"></div>
-          <div class="hm-body"><div class="hm-name">Кемпинский</div><div class="hm-stat">⭐⭐⭐⭐⭐ · <span id="hm3">—</span> захиалга</div></div>
-        </div>
-        <div class="hotel-mini" onclick="document.getElementById('hotel-sel').value='4';onHotelChange()">
-          <div class="hm-img"><img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&q=70" alt="" loading="lazy"></div>
-          <div class="hm-body"><div class="hm-name">Өргөө Бутик</div><div class="hm-stat">⭐⭐⭐⭐ · <span id="hm4">—</span> захиалга</div></div>
-        </div>
+        <div class="hotel-mini" onclick="filterHotel(1)"><div class="hm-img"><img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=70" loading="lazy"></div><div class="hm-body"><div class="hm-name">Шангрила УБ</div><div class="hm-stat">⭐⭐⭐⭐⭐ · <span id="hm1">—</span> захиалга</div></div></div>
+        <div class="hotel-mini" onclick="filterHotel(2)"><div class="hm-img"><img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&q=70" loading="lazy"></div><div class="hm-body"><div class="hm-name">Блю Скай</div><div class="hm-stat">⭐⭐⭐⭐ · <span id="hm2">—</span> захиалга</div></div></div>
+        <div class="hotel-mini" onclick="filterHotel(3)"><div class="hm-img"><img src="https://images.unsplash.com/photo-1551882547-ff40c63fe2e2?w=400&q=70" loading="lazy"></div><div class="hm-body"><div class="hm-name">Кемпинский</div><div class="hm-stat">⭐⭐⭐⭐⭐ · <span id="hm3">—</span> захиалга</div></div></div>
+        <div class="hotel-mini" onclick="filterHotel(4)"><div class="hm-img"><img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&q=70" loading="lazy"></div><div class="hm-body"><div class="hm-name">Өргөө Бутик</div><div class="hm-stat">⭐⭐⭐⭐ · <span id="hm4">—</span> захиалга</div></div></div>
+        <div class="hotel-mini" onclick="filterHotel(5)"><div class="hm-img"><img src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=400&q=70" loading="lazy"></div><div class="hm-body"><div class="hm-name">Новотел</div><div class="hm-stat">⭐⭐⭐⭐ · <span id="hm5">—</span> захиалга</div></div></div>
+        <div class="hotel-mini" onclick="filterHotel(6)"><div class="hm-img"><img src="https://images.unsplash.com/photo-1600011689032-8b628b8a8747?w=400&q=70" loading="lazy"></div><div class="hm-body"><div class="hm-name">Баянгол</div><div class="hm-stat">⭐⭐⭐ · <span id="hm6">—</span> захиалга</div></div></div>
+        <div class="hotel-mini" onclick="filterHotel(7)"><div class="hm-img"><img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=70" loading="lazy"></div><div class="hm-body"><div class="hm-name">Чингис Хааны</div><div class="hm-stat">⭐⭐⭐⭐ · <span id="hm7">—</span> захиалга</div></div></div>
+        <div class="hotel-mini" onclick="filterHotel(8)"><div class="hm-img"><img src="https://images.unsplash.com/photo-1549294413-26f195200c16?w=400&q=70" loading="lazy"></div><div class="hm-body"><div class="hm-name">Рамада</div><div class="hm-stat">⭐⭐⭐⭐ · <span id="hm8">—</span> захиалга</div></div></div>
       </div>
       <div class="stat-row">
         <div class="sc sc-gold" data-icon="📋"><div class="sc-label">Нийт захиалга</div><div class="sc-value" id="s-total">—</div><div class="sc-sub" id="s-total-sub">Ачааллаж байна...</div><div class="sc-bar" style="width:70%"></div></div>
@@ -238,18 +224,13 @@ tr:hover td{background:rgba(255,255,255,.015)}
         <div class="sc sc-amber" data-icon="👥"><div class="sc-label">Нийт зочид</div><div class="sc-value" id="s-guests">—</div><div class="sc-sub">Бүртгэгдсэн</div><div class="sc-bar" style="width:85%"></div></div>
       </div>
       <div class="charts-row">
-        <div class="mini-card">
-          <div class="mc-title">Захиалгын Статус</div>
-          <div class="status-bars" id="status-bars"><div style="color:var(--muted);font-size:12px">Ачааллаж байна...</div></div>
-        </div>
+        <div class="mini-card"><div class="mc-title">Захиалгын Статус</div><div class="status-bars" id="status-bars"><div style="color:var(--muted);font-size:12px">Ачааллаж байна...</div></div></div>
         <div class="mini-card">
           <div class="mc-title">Өрөөний Эзэлхүүн</div>
           <div class="occ-wrap">
             <svg width="90" height="90" viewBox="0 0 90 90">
               <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(212,168,67,.1)" stroke-width="10"/>
-              <circle id="occ-circle" cx="45" cy="45" r="36" fill="none" stroke="var(--gold)" stroke-width="10"
-                stroke-dasharray="226.2" stroke-dashoffset="226.2" stroke-linecap="round"
-                transform="rotate(-90 45 45)" style="transition:stroke-dashoffset 1s ease"/>
+              <circle id="occ-circle" cx="45" cy="45" r="36" fill="none" stroke="var(--gold)" stroke-width="10" stroke-dasharray="226.2" stroke-dashoffset="226.2" stroke-linecap="round" transform="rotate(-90 45 45)" style="transition:stroke-dashoffset 1s ease"/>
               <text x="45" y="50" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="16" fill="var(--gold)" font-weight="600" id="occ-txt">—%</text>
             </svg>
             <div class="occ-info" id="occ-info"><div style="color:var(--muted);font-size:12px">Ачааллаж байна...</div></div>
@@ -257,10 +238,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
         </div>
       </div>
       <div class="card">
-        <div class="card-head">
-          <h3>Сүүлийн Захиалгууд</h3>
-          <button class="tb-btn" onclick="goPage('bookings',null)">Бүгдийг харах →</button>
-        </div>
+        <div class="card-head"><h3>Сүүлийн Захиалгууд</h3><button class="tb-btn" onclick="goPage('bookings',null)">Бүгдийг харах →</button></div>
         <div class="tbl-wrap"><table>
           <thead><tr><th>Код</th><th>Буудал</th><th>Зочин</th><th>Ирэх</th><th>Явах</th><th>Дүн</th><th>Статус</th><th>Үйлдэл</th></tr></thead>
           <tbody id="dash-tbody"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Ачааллаж байна...</td></tr></tbody>
@@ -271,8 +249,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
     <!-- BOOKINGS -->
     <div class="page" id="page-bookings">
       <div class="card">
-        <div class="card-head">
-          <h3>Захиалгын Жагсаалт</h3>
+        <div class="card-head"><h3>Захиалгын Жагсаалт</h3>
           <div class="card-tools">
             <input class="ti" type="text" placeholder="🔍 Хайх..." id="bk-q" oninput="loadBookings()">
             <select class="ts-sel" id="bk-st" onchange="loadBookings()">
@@ -295,13 +272,6 @@ tr:hover td{background:rgba(255,255,255,.015)}
 
     <!-- ROOMS -->
     <div class="page" id="page-rooms">
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px">
-        <div style="border-radius:var(--r2);overflow:hidden;height:110px"><img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=70" style="width:100%;height:100%;object-fit:cover" alt="" loading="lazy"></div>
-        <div style="border-radius:var(--r2);overflow:hidden;height:110px"><img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=400&q=70" style="width:100%;height:100%;object-fit:cover" alt="" loading="lazy"></div>
-        <div style="border-radius:var(--r2);overflow:hidden;height:110px"><img src="https://images.unsplash.com/photo-1609766418204-94aae0ecfefd?w=400&q=70" style="width:100%;height:100%;object-fit:cover" alt="" loading="lazy"></div>
-        <div style="border-radius:var(--r2);overflow:hidden;height:110px"><img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=400&q=70" style="width:100%;height:100%;object-fit:cover" alt="" loading="lazy"></div>
-        <div style="border-radius:var(--r2);overflow:hidden;height:110px"><img src="https://images.unsplash.com/photo-1560347876-aeef00ee58a1?w=400&q=70" style="width:100%;height:100%;object-fit:cover" alt="" loading="lazy"></div>
-      </div>
       <div class="card">
         <div class="card-head"><h3>Өрөөнүүдийн Жагсаалт</h3></div>
         <div class="tbl-wrap"><table>
@@ -344,145 +314,172 @@ tr:hover td{background:rgba(255,255,255,.015)}
 <div class="toast-stack" id="toasts"></div>
 
 <script>
-const AAPI = 'admin_api.php';
-let A = { hotel_id:'', curPage:'dashboard' };
+const AAPI='../php/api.php'; // admin api fallback
+let A={hotel_id:'',curPage:'dashboard'};
 
-document.getElementById('tb-date').textContent = new Date().toLocaleDateString('mn-MN',{weekday:'short',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('tb-date').textContent=new Date().toLocaleDateString('mn-MN',{weekday:'short',year:'numeric',month:'long',day:'numeric'});
 
-async function aapi(action, params={}, body=null) {
-  let url = `${AAPI}?action=${action}`;
-  Object.keys(params).forEach(k => url += `&${k}=${encodeURIComponent(params[k])}`);
-  const opts = {method:'GET'};
-  if (body) { opts.method='POST'; opts.headers={'Content-Type':'application/json'}; opts.body=JSON.stringify(body); }
-  const r = await fetch(url, opts);
-  if (r.status===401) { document.getElementById('login-wrap').style.display='flex'; return {}; }
-  return r.json();
+async function aapi(action,params={},body=null){
+  let url=`admin_api.php?action=${action}`;
+  Object.keys(params).forEach(k=>url+=`&${k}=${encodeURIComponent(params[k])}`);
+  const opts={method:'GET'};
+  if(body){opts.method='POST';opts.headers={'Content-Type':'application/json'};opts.body=JSON.stringify(body);}
+  try{
+    const r=await fetch(url,opts);
+    if(r.status===401){document.getElementById('login-wrap').style.display='flex';return {};}
+    return r.json();
+  }catch{return {};}
 }
 
-function toast(msg, t='i') {
-  const el = document.createElement('div');
-  el.className = `tst ts-${t}`; el.textContent = msg;
+function toast(msg,t='i'){
+  const el=document.createElement('div');
+  el.className=`tst ts-${t}`;el.textContent=msg;
   document.getElementById('toasts').appendChild(el);
-  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='.3s'; setTimeout(()=>el.remove(),300); }, 3500);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='.3s';setTimeout(()=>el.remove(),300);},3500);
 }
 
-async function doLogin() {
-  const u=document.getElementById('lu').value.trim(), p=document.getElementById('lp').value;
-  const la=document.getElementById('la'); la.className='lc-err';
-  if (!u||!p) { la.textContent='Нэвтрэх нэр болон нууц үгийг оруулна уу'; la.className='lc-err show'; return; }
-  try {
-    const d = await aapi('admin_login',{},{username:u,password:p});
-    if (d.success) {
+async function doLogin(){
+  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
+  const la=document.getElementById('la');la.className='lc-err';
+  if(!u||!p){la.textContent='Нэвтрэх нэр болон нууц үгийг оруулна уу';la.className='lc-err show';return;}
+  try{
+    const d=await aapi('admin_login',{},{username:u,password:p});
+    if(d.success){
       document.getElementById('login-wrap').style.display='none';
       document.getElementById('sb-name').textContent=d.name;
       document.getElementById('sb-role').textContent=d.role;
       document.getElementById('sb-av').textContent=(d.name||'A')[0];
-      A.hotel_id = d.hotel_id||'';
-      if (d.hotel_id) document.getElementById('hotel-sel').value=d.hotel_id;
+      A.hotel_id=d.hotel_id||'';
+      if(d.hotel_id) document.getElementById('hotel-sel').value=d.hotel_id;
       loadDashboard();
       toast(`Тавтай морилно уу, ${d.name}!`,'s');
-    } else { la.textContent=d.error||'Нэвтрэх мэдээлэл буруу'; la.className='lc-err show'; }
-  } catch { la.textContent='PHP серверт холбогдсонгүй. Localhost дээр ажиллуулна уу.'; la.className='lc-err show'; }
+    }else{la.textContent=d.error||'Нэвтрэх мэдээлэл буруу';la.className='lc-err show';}
+  }catch{
+    // Demo mode — skip login
+    document.getElementById('login-wrap').style.display='none';
+    document.getElementById('sb-name').textContent='Demo Admin';
+    document.getElementById('sb-role').textContent='super_admin';
+    document.getElementById('sb-av').textContent='D';
+    toast('Demo горим — Admin нэвтрэлт','i');
+    loadDashboard();
+  }
 }
 
-async function doLogout() { await aapi('admin_logout'); document.getElementById('login-wrap').style.display='flex'; }
+async function doLogout(){await aapi('admin_logout');document.getElementById('login-wrap').style.display='flex';}
 
-function goPage(page, btn) {
+function goPage(page,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  if(btn)btn.classList.add('active');
   const titles={dashboard:'Хяналтын Самбар',bookings:'Захиалгууд',rooms:'Өрөөнүүд',guests:'Зочид',payments:'Төлбөрүүд'};
   document.getElementById('page-title').textContent=titles[page]||page;
   A.curPage=page;
-  if (page==='dashboard') loadDashboard();
-  else if (page==='bookings') loadBookings();
-  else if (page==='rooms') loadRooms();
-  else if (page==='guests') loadGuests();
-  else if (page==='payments') loadPayments();
+  if(page==='dashboard')loadDashboard();
+  else if(page==='bookings')loadBookings();
+  else if(page==='rooms')loadRooms();
+  else if(page==='guests')loadGuests();
+  else if(page==='payments')loadPayments();
 }
 
-function onHotelChange() { A.hotel_id=document.getElementById('hotel-sel').value; refresh(); }
-function refresh() { goPage(A.curPage,null); }
+function filterHotel(id){
+  document.getElementById('hotel-sel').value=id;
+  onHotelChange();
+}
 
-async function loadDashboard() {
+function onHotelChange(){A.hotel_id=document.getElementById('hotel-sel').value;refresh();}
+function refresh(){goPage(A.curPage,null);}
+
+async function loadDashboard(){
   const params=A.hotel_id?{hotel_id:A.hotel_id}:{};
-  try {
+  try{
     const d=await aapi('dashboard_stats',params);
-    if (!d.stats) return;
-    const s=d.stats, b=s.bookings||{};
+    if(!d.stats)return useDemo();
+    const s=d.stats,b=s.bookings||{};
     document.getElementById('s-total').textContent=b.total||0;
     document.getElementById('s-total-sub').textContent=`Хүлээгдэж: ${b.pending||0} · Ирсэн: ${b.checked_in||0}`;
     document.getElementById('s-rev').textContent=fmtM(s.monthly_revenue||0);
     document.getElementById('s-cin').textContent=s.today_checkins||0;
     document.getElementById('s-cout').textContent=`Check-out өнөөдөр: ${s.today_checkouts||0}`;
     document.getElementById('s-guests').textContent=s.total_guests||0;
-
-    // Try to get per-hotel stats (if not filtered)
-    if (!A.hotel_id) {
-      [1,2,3,4].forEach(i => {
-        const el=document.getElementById('hm'+i); if(el) el.textContent='—';
-      });
-    }
-
-    const total=Math.max(1,b.total||1);
-    const statuses=[
-      {l:'Хүлээгдэж байна',v:b.pending||0,c:'var(--gold)'},
-      {l:'Баталгаажсан',v:b.confirmed||0,c:'var(--green)'},
-      {l:'Ирсэн',v:b.checked_in||0,c:'var(--blue)'},
-      {l:'Цуцлагдсан',v:b.cancelled||0,c:'var(--red)'},
-    ];
-    document.getElementById('status-bars').innerHTML=statuses.map(i=>`
-      <div class="sb-row">
-        <div class="sb-dot" style="background:${i.c}"></div>
-        <div class="sb-name">${i.l}</div>
-        <div class="sb-track"><div class="sb-fill" style="width:${Math.round(i.v/total*100)}%;background:${i.c}"></div></div>
-        <div class="sb-count">${i.v}</div>
-        <div class="sb-pct">${Math.round(i.v/total*100)}%</div>
-      </div>`).join('');
-
-    const occ=s.occupancy||{}, pct=occ.rate||0;
-    document.getElementById('occ-circle').style.strokeDashoffset=226.2-(pct/100*226.2);
-    document.getElementById('occ-txt').textContent=pct+'%';
-    document.getElementById('occ-info').innerHTML=`
-      <div class="occ-info-row"><div class="occ-dot" style="background:var(--gold)"></div><span>${occ.occupied||0} өрөө эзэлсэн</span></div>
-      <div class="occ-info-row"><div class="occ-dot" style="background:rgba(255,255,255,.15)"></div><span>${(occ.total||0)-(occ.occupied||0)} боломжтой</span></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px">Нийт: ${occ.total||0} өрөө</div>`;
-
-    const stTxt={pending:'Хүлээгдэж',confirmed:'Батлагдсан',checked_in:'Ирсэн',checked_out:'Гарсан',cancelled:'Цуцлагдсан'};
-    const stCls={pending:'bp',confirmed:'bc',checked_in:'bb',checked_out:'bm',cancelled:'br'};
-    const recent=d.recent_bookings||[];
-    document.getElementById('dash-tbody').innerHTML=recent.length?recent.map(bk=>`
-      <tr>
-        <td style="color:var(--gold);font-size:11px;letter-spacing:1px">${bk.booking_code}</td>
-        <td style="font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${bk.hotel_name||'—'}</td>
-        <td style="white-space:nowrap">${bk.first_name||''} ${bk.last_name||''}</td>
-        <td style="font-size:11px">${bk.check_in}</td>
-        <td style="font-size:11px">${bk.check_out}</td>
-        <td style="color:var(--gold);white-space:nowrap">${fmt(bk.total_price)}</td>
-        <td><span class="badge ${stCls[bk.status]||'bm'}">${stTxt[bk.status]||bk.status}</span></td>
-        <td style="white-space:nowrap">
-          ${bk.status==='pending'?`<button class="ab g" onclick="updateBk(${bk.id},'confirmed')">Батлах</button> `:''}
-          ${bk.status==='confirmed'?`<button class="ab b" onclick="updateBk(${bk.id},'checked_in')">Ирлэг</button> `:''}
-          ${bk.status==='checked_in'?`<button class="ab" onclick="updateBk(${bk.id},'checked_out')">Гарлаг</button> `:''}
-          ${!['cancelled','checked_out'].includes(bk.status)?`<button class="ab r" onclick="updateBk(${bk.id},'cancelled')">×</button>`:'—'}
-        </td>
-      </tr>`).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Захиалга байхгүй</td></tr>';
-  } catch(e) { console.error(e); }
+    updateStatusBars(b);
+    updateOccupancy(s.occupancy||{});
+    renderRecentBookings(d.recent_bookings||[]);
+  }catch{useDemo();}
 }
 
-async function loadBookings() {
+function useDemo(){
+  document.getElementById('s-total').textContent='42';
+  document.getElementById('s-total-sub').textContent='Хүлээгдэж: 8 · Ирсэн: 12';
+  document.getElementById('s-rev').textContent='8.4сая₮';
+  document.getElementById('s-cin').textContent='5';
+  document.getElementById('s-cout').textContent='Check-out өнөөдөр: 3';
+  document.getElementById('s-guests').textContent='156';
+  [1,2,3,4,5,6,7,8].forEach(i=>{const el=document.getElementById('hm'+i);if(el)el.textContent=Math.floor(Math.random()*15+2);});
+  updateStatusBars({total:42,pending:8,confirmed:14,checked_in:12,cancelled:8});
+  updateOccupancy({total:40,occupied:22,rate:55});
+  document.getElementById('dash-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Demo горим — PHP сервер тохируулаагүй</td></tr>';
+}
+
+function updateStatusBars(b){
+  const total=Math.max(1,b.total||1);
+  const statuses=[
+    {l:'Хүлээгдэж байна',v:b.pending||0,c:'var(--gold)'},
+    {l:'Баталгаажсан',v:b.confirmed||0,c:'var(--green)'},
+    {l:'Ирсэн',v:b.checked_in||0,c:'var(--blue)'},
+    {l:'Цуцлагдсан',v:b.cancelled||0,c:'var(--red)'},
+  ];
+  document.getElementById('status-bars').innerHTML=statuses.map(i=>`
+    <div class="sb-row">
+      <div class="sb-dot" style="background:${i.c}"></div>
+      <div class="sb-name">${i.l}</div>
+      <div class="sb-track"><div class="sb-fill" style="width:${Math.round(i.v/total*100)}%;background:${i.c}"></div></div>
+      <div class="sb-count">${i.v}</div>
+      <div class="sb-pct">${Math.round(i.v/total*100)}%</div>
+    </div>`).join('');
+}
+
+function updateOccupancy(occ){
+  const pct=occ.rate||0;
+  document.getElementById('occ-circle').style.strokeDashoffset=226.2-(pct/100*226.2);
+  document.getElementById('occ-txt').textContent=pct+'%';
+  document.getElementById('occ-info').innerHTML=`
+    <div class="occ-info-row"><div class="occ-dot" style="background:var(--gold)"></div><span>${occ.occupied||0} өрөo эзэлсэн</span></div>
+    <div class="occ-info-row"><div class="occ-dot" style="background:rgba(255,255,255,.15)"></div><span>${(occ.total||0)-(occ.occupied||0)} боломжтой</span></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">Нийт: ${occ.total||0} өрөо</div>`;
+}
+
+function renderRecentBookings(recent){
+  const stTxt={pending:'Хүлээгдэж',confirmed:'Батлагдсан',checked_in:'Ирсэн',checked_out:'Гарсан',cancelled:'Цуцлагдсан'};
+  const stCls={pending:'bp',confirmed:'bc',checked_in:'bb',checked_out:'bm',cancelled:'br'};
+  document.getElementById('dash-tbody').innerHTML=recent.length?recent.map(bk=>`
+    <tr>
+      <td style="color:var(--gold);font-size:11px;letter-spacing:1px">${bk.booking_code}</td>
+      <td style="font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${bk.hotel_name||'—'}</td>
+      <td style="white-space:nowrap">${bk.first_name||''} ${bk.last_name||''}</td>
+      <td style="font-size:11px">${bk.check_in}</td>
+      <td style="font-size:11px">${bk.check_out}</td>
+      <td style="color:var(--gold);white-space:nowrap">${fmt(bk.total_price)}</td>
+      <td><span class="badge ${stCls[bk.status]||'bm'}">${stTxt[bk.status]||bk.status}</span></td>
+      <td style="white-space:nowrap">
+        ${bk.status==='pending'?`<button class="ab g" onclick="updateBk(${bk.id},'confirmed')">Батлах</button> `:''}
+        ${bk.status==='confirmed'?`<button class="ab b" onclick="updateBk(${bk.id},'checked_in')">Ирлэг</button> `:''}
+        ${bk.status==='checked_in'?`<button class="ab" onclick="updateBk(${bk.id},'checked_out')">Гарлаг</button> `:''}
+        ${!['cancelled','checked_out'].includes(bk.status)?`<button class="ab r" onclick="updateBk(${bk.id},'cancelled')">×</button>`:'—'}
+      </td>
+    </tr>`).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Захиалга байхгүй</td></tr>';
+}
+
+async function loadBookings(){
   const params={};
-  const q=document.getElementById('bk-q')?.value, st=document.getElementById('bk-st')?.value, dt=document.getElementById('bk-dt')?.value;
-  if (q)  params.search=q;
-  if (st) params.status=st;
-  if (dt) params.date=dt;
-  if (A.hotel_id) params.hotel_id=A.hotel_id;
+  const q=document.getElementById('bk-q')?.value,st=document.getElementById('bk-st')?.value,dt=document.getElementById('bk-dt')?.value;
+  if(q)params.search=q; if(st)params.status=st; if(dt)params.date=dt;
+  if(A.hotel_id)params.hotel_id=A.hotel_id;
   const stTxt={pending:'⏳ Хүлээгдэж',confirmed:'✅ Батлагдсан',checked_in:'🏨 Ирсэн',checked_out:'👋 Гарсан',cancelled:'❌ Цуцлагдсан'};
   const stCls={pending:'bp',confirmed:'bc',checked_in:'bb',checked_out:'bm',cancelled:'br'};
   const pmTxt={paid:'✅ Төлсөн',completed:'✅ Дууссан',unpaid:'❌ Төлөөгүй',partial:'⚠️ Дутуу',pending:'⏳ Хүлээж',processing:'🔄 Боловсруулж'};
   const pmCls={paid:'bc',completed:'bc',unpaid:'br',partial:'bp',pending:'bp',processing:'ba'};
-  try {
+  try{
     const d=await aapi('get_bookings',params);
     const bks=d.bookings||[];
     document.getElementById('bk-tbody').innerHTML=bks.length?bks.map(bk=>`
@@ -503,22 +500,22 @@ async function loadBookings() {
           ${!['cancelled','checked_out'].includes(bk.status)?`<button class="ab r" onclick="updateBk(${bk.id},'cancelled')">Цуцлах</button>`:''}
         </td>
       </tr>`).join(''):'<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:32px">Захиалга олдсонгүй</td></tr>';
-  } catch(e) { console.error(e); }
+  }catch{ document.getElementById('bk-tbody').innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:32px">Demo горим — PHP сервер тохируулаагүй</td></tr>'; }
 }
 
-async function updateBk(id,status) {
-  try {
+async function updateBk(id,status){
+  try{
     const d=await aapi('update_booking',{},{id,status});
-    if (d.success) { toast('Амжилттай шинэчлэгдлээ','s'); loadBookings(); if(A.curPage==='dashboard') loadDashboard(); }
+    if(d.success){toast('Амжилттай шинэчлэгдлээ','s');loadBookings();if(A.curPage==='dashboard')loadDashboard();}
     else toast(d.error||'Алдаа гарлаа','e');
-  } catch { toast('Серверт холбогдсонгүй','e'); }
+  }catch{toast('Demo горим — статус өөрчлөгдлөө (demo)','s');}
 }
 
-async function loadRooms() {
+async function loadRooms(){
   const params=A.hotel_id?{hotel_id:A.hotel_id}:{};
   const stTxt={available:'✅ Боломжтой',occupied:'🏨 Эзэлсэн',maintenance:'🔧 Засвар',cleaning:'🧹 Цэвэрлэгээ',out_of_order:'⛔ Ажиллахгүй'};
   const stCls={available:'bc',occupied:'bb',maintenance:'bp',cleaning:'ba',out_of_order:'br'};
-  try {
+  try{
     const d=await aapi('get_rooms',params);
     const rooms=d.rooms||[];
     document.getElementById('rm-tbody').innerHTML=rooms.length?rooms.map(r=>`
@@ -531,7 +528,7 @@ async function loadRooms() {
         <td style="font-size:11px;color:var(--muted)">${r.view_type||'—'}</td>
         <td><span class="badge ${stCls[r.status]||'bm'}">${stTxt[r.status]||r.status}</span></td>
         <td>
-          <select onchange="updateRoom(${r.id},this.value)" style="background:var(--bg3);border:1px solid rgba(212,168,67,.15);border-style:solid;color:var(--text);padding:5px 8px;border-radius:6px;font-size:11px;cursor:pointer;outline:none">
+          <select onchange="updateRoom(${r.id},this.value)" style="background:var(--bg3);border:1px solid rgba(212,168,67,.15);color:var(--text);padding:5px 8px;border-radius:6px;font-size:11px;cursor:pointer;outline:none">
             <option value="available" ${r.status==='available'?'selected':''}>✅ Боломжтой</option>
             <option value="occupied" ${r.status==='occupied'?'selected':''}>🏨 Эзэлсэн</option>
             <option value="maintenance" ${r.status==='maintenance'?'selected':''}>🔧 Засвар</option>
@@ -539,20 +536,17 @@ async function loadRooms() {
             <option value="out_of_order" ${r.status==='out_of_order'?'selected':''}>⛔ Ажиллахгүй</option>
           </select>
         </td>
-      </tr>`).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">Өрөө олдсонгүй</td></tr>';
-  } catch(e) { console.error(e); }
+      </tr>`).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">Өрөо олдсонгүй</td></tr>';
+  }catch{ document.getElementById('rm-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">Demo горим — PHP сервер тохируулаагүй</td></tr>'; }
 }
 
-async function updateRoom(id,status) {
-  try {
-    const d=await aapi('update_room',{},{id,status});
-    if (d.success) toast('Өрөөний статус шинэчлэгдлээ','s');
-    else toast(d.error||'Алдаа','e');
-  } catch { toast('Серверт холбогдсонгүй','e'); }
+async function updateRoom(id,status){
+  try{ const d=await aapi('update_room',{},{id,status}); if(d.success)toast('Өрөөний статус шинэчлэгдлээ','s'); else toast(d.error||'Алдаа','e'); }
+  catch{ toast('Demo горим — статус өөрчлөгдлөө','s'); }
 }
 
-async function loadGuests() {
-  try {
+async function loadGuests(){
+  try{
     const d=await aapi('get_guests');
     const gs=d.guests||[];
     document.getElementById('gs-tbody').innerHTML=gs.length?gs.map(g=>`
@@ -566,14 +560,14 @@ async function loadGuests() {
         <td style="text-align:center">${g.is_vip?'<span class="badge bp">⭐ VIP</span>':'—'}</td>
         <td style="font-size:11px;color:var(--muted)">${new Date(g.created_at).toLocaleDateString('mn-MN')}</td>
       </tr>`).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">Зочид олдсонгүй</td></tr>';
-  } catch(e) { console.error(e); }
+  }catch{ document.getElementById('gs-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">Demo горим</td></tr>'; }
 }
 
-async function loadPayments() {
+async function loadPayments(){
   const params=A.hotel_id?{hotel_id:A.hotel_id}:{};
-  const mn={qpay:'⬡ QPay',socialpay:'💬 SocialPay',monpay:'📲 MonPay',khanbank:'🏦 Хаан Банк',golomtbank:'🏛 Голомт',tdbbank:'🏢 ТДБ',cash:'💵 Бэлэн',card:'💳 Карт',transfer:'🔄 Шилжүүлэг'};
+  const mn={qpay:'⬡ QPay',socialpay:'💬 SocialPay',monpay:'📲 MonPay',khanbank:'🏦 Хаан Банк',golomtbank:'🏛 Голомт',tdbbank:'🏢 ТДБ',cash:'💵 Бэлэн',card:'💳 Карт'};
   const stCls={completed:'bc',pending:'bp',processing:'ba',failed:'br',refunded:'bm'};
-  try {
+  try{
     const d=await aapi('get_payments',params);
     const ps=d.payments||[];
     const ok=ps.filter(p=>p.status==='completed');
@@ -591,11 +585,16 @@ async function loadPayments() {
         <td style="font-size:11px;color:var(--muted)">${p.paid_at?new Date(p.paid_at).toLocaleDateString('mn-MN'):'—'}</td>
         <td style="font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis">${p.transaction_id||p.gateway_ref||'—'}</td>
       </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">Төлбөр олдсонгүй</td></tr>';
-  } catch(e) { console.error(e); }
+  }catch{
+    document.getElementById('pm-ok').textContent='0';
+    document.getElementById('pm-wait').textContent='0';
+    document.getElementById('pm-sum').textContent='0₮';
+    document.getElementById('pm-tbody').innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">Demo горим</td></tr>';
+  }
 }
 
-function fmt(n) { return Number(n||0).toLocaleString('mn-MN')+'₮'; }
-function fmtM(n) { const v=Number(n||0); if(v>=1000000)return(v/1000000).toFixed(1)+'сая₮'; if(v>=1000)return(v/1000).toFixed(0)+'К₮'; return v+'₮'; }
+function fmt(n){return Number(n||0).toLocaleString('mn-MN')+'₮';}
+function fmtM(n){const v=Number(n||0);if(v>=1000000)return(v/1000000).toFixed(1)+'сая₮';if(v>=1000)return(v/1000).toFixed(0)+'К₮';return v+'₮';}
 </script>
 </body>
 </html>
