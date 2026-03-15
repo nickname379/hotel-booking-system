@@ -529,61 +529,113 @@ function checkPromo(array $body): never {
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PAYMENTS
+// PAYMENTS — Бүрэн бат төлбөрийн систем
 // ══════════════════════════════════════════════════════════════════
 function initPayment(array $body): never {
     $db         = getDB();
     $booking_id = (int)($body['booking_id'] ?? 0);
-    $method     = sanitize($body['method']     ?? '');
+    $method     = sanitize($body['method']   ?? '');
 
-    $allowed = ['qpay','socialpay','monpay','khanbank','golomtbank','tdbbank','cash','card','transfer'];
+    $allowed = ['qpay','socialpay','monpay','khanbank','golomtbank','tdbbank','cash','card'];
     if (!in_array($method, $allowed)) jsonResponse(['error' => 'Төлбөрийн хэлбэр буруу'], 400);
-    if (!$booking_id) jsonResponse(['error' => 'booking_id байхгүй'], 400);
+    if (!$booking_id)                jsonResponse(['error' => 'booking_id байхгүй'], 400);
 
-    $stmt = $db->prepare("SELECT b.*, h.name as hotel_name FROM bookings b
-                           JOIN hotels h ON b.hotel_id=h.id WHERE b.id=?");
+    $stmt = $db->prepare("SELECT b.*, h.name as hotel_name
+                           FROM bookings b JOIN hotels h ON b.hotel_id=h.id
+                           WHERE b.id=?");
     $stmt->execute([$booking_id]);
     $booking = $stmt->fetch();
     if (!$booking) jsonResponse(['error' => 'Захиалга олдсонгүй'], 404);
 
-    $db->prepare("INSERT INTO payments (booking_id,payment_method,amount,status) VALUES (?,?,?,'pending')")
+    if (in_array($booking['status'], ['checked_out','cancelled']))
+        jsonResponse(['error' => 'Энэ захиалгад төлбөр хийх боломжгүй'], 400);
+
+    // Өмнөх pending/processing төлбөруудыг цуцлах
+    $db->prepare("UPDATE payments SET status='cancelled'
+                   WHERE booking_id=? AND status IN ('pending','processing')")
+       ->execute([$booking_id]);
+
+    $db->prepare("INSERT INTO payments (booking_id,payment_method,amount,status,created_at)
+                  VALUES (?,?,?,'pending',NOW())")
        ->execute([$booking_id, $method, $booking['total_price']]);
     $payment_id = $db->lastInsertId();
+    $amt = (float)$booking['total_price'];
 
-    $amt = $booking['total_price'];
-
+    /* ── QPay ─────────────────────────────────────────────────── */
     if ($method === 'qpay') {
         $qpay = QPay::createInvoice($booking);
         if ($qpay['success']) {
-            $db->prepare("UPDATE payments SET qpay_invoice_id=?,qpay_qr_text=?,status='processing' WHERE id=?")
-               ->execute([$qpay['invoice_id'], $qpay['qr_text'], $payment_id]);
-            jsonResponse(['success' => true, 'payment_id' => $payment_id, 'method' => 'qpay',
-                          'amount' => $amt, 'qr_text' => $qpay['qr_text'],
-                          'deep_links' => makeDeepLinks($qpay['qr_text'], $booking)]);
+            $db->prepare("UPDATE payments SET
+                qpay_invoice_id=?, qpay_qr_text=?, qpay_qr_image=?,
+                gateway_ref=?, status='processing', updated_at=NOW()
+                WHERE id=?")
+               ->execute([$qpay['invoice_id'], $qpay['qr_text'],
+                          $qpay['qr_image'] ?? '', $qpay['invoice_id'], $payment_id]);
+            jsonResponse([
+                'success'    => true,  'payment_id' => $payment_id,
+                'method'     => 'qpay','amount'     => $amt,
+                'qr_text'    => $qpay['qr_text'],
+                'qr_image'   => $qpay['qr_image'] ?? '',
+                'invoice_id' => $qpay['invoice_id'],
+                'deep_links' => _deepLinks($qpay['qr_text']),
+                'expires_in' => 1800,
+            ]);
         }
-        // Sandbox fallback
-        $qrTxt = 'QPay_' . $booking['booking_code'];
-        $db->prepare("UPDATE payments SET qpay_qr_text=?,status='processing',gateway_ref='SANDBOX' WHERE id=?")
+        // QPay sandbox fallback
+        $qrTxt = 'QPay_' . $booking['booking_code'] . '_' . $payment_id;
+        $db->prepare("UPDATE payments SET qpay_qr_text=?, status='processing',
+                       gateway_ref='SANDBOX_DEMO', updated_at=NOW() WHERE id=?")
            ->execute([$qrTxt, $payment_id]);
-        jsonResponse(['success' => true, 'payment_id' => $payment_id, 'method' => 'qpay',
-                      'amount' => $amt, 'qr_text' => $qrTxt, 'sandbox' => true,
-                      'deep_links' => makeDeepLinks($qrTxt, $booking)]);
+        jsonResponse([
+            'success'    => true,  'payment_id' => $payment_id,
+            'method'     => 'qpay','amount'     => $amt,
+            'qr_text'    => $qrTxt,'sandbox'    => true,
+            'deep_links' => _deepLinks($qrTxt),
+            'expires_in' => 1800,
+        ]);
     }
 
+    /* ── Банкны шилжүүлэг ─────────────────────────────────────── */
     if (in_array($method, ['khanbank','golomtbank','tdbbank'])) {
-        $db->prepare("UPDATE payments SET status='processing' WHERE id=?")->execute([$payment_id]);
-        jsonResponse(['success' => true, 'payment_id' => $payment_id, 'method' => $method,
-                      'amount' => $amt, 'bank_info' => getBankInfo($method, $booking)]);
+        $db->prepare("UPDATE payments SET status='processing', updated_at=NOW() WHERE id=?")
+           ->execute([$payment_id]);
+        $banks = [
+            'khanbank'   => ['name'=>'Хаан Банк',   'account'=>'5000123456','branch'=>'Төв салбар'],
+            'golomtbank' => ['name'=>'Голомт Банк',  'account'=>'1200987654','branch'=>'Чингэлтэй'],
+            'tdbbank'    => ['name'=>'ТДБ Банк',     'account'=>'4001234567','branch'=>'Улаанбаатар'],
+        ];
+        $bi = $banks[$method];
+        jsonResponse([
+            'success'    => true, 'payment_id' => $payment_id,
+            'method'     => $method, 'amount' => $amt,
+            'bank_info'  => array_merge($bi, [
+                'owner'     => 'МонголHotels ХХК',
+                'reference' => $booking['booking_code'],
+                'amount'    => $amt,
+                'note'      => '⚠️ Гүйлгээний утгад "' . $booking['booking_code'] . '" заавал бичнэ үү',
+            ]),
+        ]);
     }
 
+    /* ── SocialPay / MonPay ───────────────────────────────────── */
     if (in_array($method, ['socialpay','monpay'])) {
-        $db->prepare("UPDATE payments SET status='processing' WHERE id=?")->execute([$payment_id]);
-        jsonResponse(['success' => true, 'payment_id' => $payment_id, 'method' => $method,
-                      'amount' => $amt, 'merchant_name' => 'MONGOHOTELS']);
+        $db->prepare("UPDATE payments SET status='processing', updated_at=NOW() WHERE id=?")
+           ->execute([$payment_id]);
+        jsonResponse([
+            'success'       => true, 'payment_id' => $payment_id,
+            'method'        => $method, 'amount' => $amt,
+            'merchant_name' => 'MONGOHOTELS',
+            'reference'     => $booking['booking_code'],
+            'description'   => 'Захиалга: ' . $booking['booking_code'],
+        ]);
     }
 
-    // Cash / Card
-    jsonResponse(['success' => true, 'payment_id' => $payment_id, 'method' => $method, 'amount' => $amt]);
+    /* ── Бэлэн / Карт ────────────────────────────────────────── */
+    jsonResponse([
+        'success'    => true, 'payment_id' => $payment_id,
+        'method'     => $method, 'amount' => $amt,
+        'booking_code' => $booking['booking_code'],
+    ]);
 }
 
 function checkPayment(): never {
@@ -591,62 +643,135 @@ function checkPayment(): never {
     $payment_id = (int)($_GET['payment_id'] ?? 0);
     if (!$payment_id) jsonResponse(['error' => 'payment_id шаардлагатай'], 400);
 
-    $stmt = $db->prepare("SELECT * FROM payments WHERE id=?");
+    $stmt = $db->prepare("SELECT p.*, b.booking_code, b.status as booking_status
+                           FROM payments p JOIN bookings b ON p.booking_id=b.id
+                           WHERE p.id=?");
     $stmt->execute([$payment_id]);
     $p = $stmt->fetch();
     if (!$p) jsonResponse(['error' => 'Төлбөр олдсонгүй'], 404);
 
-    // If QPay, check with API
-    if ($p['payment_method'] === 'qpay' && $p['qpay_invoice_id']) {
+    // Аль хэдийн дууссан
+    if ($p['status'] === 'completed') {
+        jsonResponse(['paid' => true, 'status' => 'completed',
+                      'payment_id' => $payment_id, 'booking_code' => $p['booking_code'],
+                      'amount' => $p['amount'], 'paid_at' => $p['paid_at'],
+                      'method' => $p['payment_method']]);
+    }
+
+    // Цуцлагдсан / дуусаагүй
+    if (in_array($p['status'], ['cancelled','failed','refunded']))
+        jsonResponse(['paid' => false, 'status' => $p['status'], 'payment_id' => $payment_id]);
+
+    // QPay API-аас бодит шалгалт (sandbox биш тохиолдолд)
+    if ($p['payment_method'] === 'qpay'
+        && !empty($p['qpay_invoice_id'])
+        && $p['gateway_ref'] !== 'SANDBOX_DEMO') {
         $result = QPay::checkPayment($p['qpay_invoice_id']);
         if ($result['paid']) {
-            $db->prepare("UPDATE payments SET status='completed',paid_at=NOW() WHERE id=?")->execute([$payment_id]);
-            $db->prepare("UPDATE bookings SET status='confirmed' WHERE id=?")->execute([$p['booking_id']]);
-            jsonResponse(['paid' => true, 'status' => 'completed']);
+            _markComplete($db, $payment_id, $p['booking_id'],
+                          $result['transaction_id'] ?? 'QPAY_AUTO',
+                          $p['qpay_invoice_id']);
+            jsonResponse(['paid' => true, 'status' => 'completed',
+                          'payment_id' => $payment_id, 'booking_code' => $p['booking_code'],
+                          'amount' => $p['amount'], 'paid_at' => date('Y-m-d H:i:s'),
+                          'method' => 'qpay']);
         }
     }
 
-    jsonResponse(['paid' => $p['status'] === 'completed', 'status' => $p['status']]);
+    // 2 цагаас хэтэрсэн бол expire болгох
+    if ($p['status'] === 'processing') {
+        $age = time() - strtotime($p['created_at']);
+        if ($age > 7200) {
+            $db->prepare("UPDATE payments SET status='failed', updated_at=NOW() WHERE id=?")
+               ->execute([$payment_id]);
+            jsonResponse(['paid' => false, 'status' => 'expired', 'payment_id' => $payment_id]);
+        }
+    }
+
+    jsonResponse(['paid' => false, 'status' => $p['status'],
+                  'payment_id' => $payment_id, 'method' => $p['payment_method'],
+                  'amount' => $p['amount']]);
 }
 
 function confirmPayment(array $body): never {
     $db         = getDB();
     $payment_id = (int)($body['payment_id'] ?? 0);
-    $ref        = sanitize($body['reference'] ?? 'MANUAL');
+    $reference  = sanitize($body['reference'] ?? '');
+    $method     = sanitize($body['method']    ?? '');
 
-    $stmt = $db->prepare("UPDATE payments SET status='completed', transaction_id=?, paid_at=NOW() WHERE id=?");
-    $stmt->execute([$ref, $payment_id]);
+    if (!$payment_id) jsonResponse(['error' => 'payment_id шаардлагатай'], 400);
 
-    $stmt = $db->prepare("SELECT booking_id FROM payments WHERE id=?");
+    $stmt = $db->prepare("SELECT p.*, b.booking_code
+                           FROM payments p JOIN bookings b ON p.booking_id=b.id
+                           WHERE p.id=?");
     $stmt->execute([$payment_id]);
     $p = $stmt->fetch();
-    if ($p) $db->prepare("UPDATE bookings SET status='confirmed' WHERE id=?")->execute([$p['booking_id']]);
+    if (!$p) jsonResponse(['error' => 'Төлбөр олдсонгүй'], 404);
 
-    jsonResponse(['success' => true]);
+    if ($p['status'] === 'completed')
+        jsonResponse(['success' => true, 'already_paid' => true,
+                      'booking_code' => $p['booking_code']]);
+
+    if (in_array($p['status'], ['cancelled','failed']))
+        jsonResponse(['error' => 'Энэ төлбөр цуцлагдсан байна'], 400);
+
+    // Банк шилжүүлэгт reference шаардлагатай
+    $needsRef = ['khanbank','golomtbank','tdbbank','transfer'];
+    if (in_array($p['payment_method'], $needsRef) && empty($reference))
+        jsonResponse(['error' => 'Гүйлгээний дугаар оруулна уу'], 400);
+
+    $ref = $reference ?: match($p['payment_method']) {
+        'socialpay' => 'SOCIALPAY_' . time(),
+        'monpay'    => 'MONPAY_' . time(),
+        'cash'      => 'CASH_' . date('YmdHis'),
+        'card'      => 'CARD_' . date('YmdHis'),
+        default     => 'MANUAL_' . date('YmdHis'),
+    };
+
+    _markComplete($db, $payment_id, $p['booking_id'], $ref, $ref);
+
+    jsonResponse(['success' => true, 'payment_id' => $payment_id,
+                  'booking_code' => $p['booking_code'],
+                  'amount' => $p['amount'], 'method' => $p['payment_method'],
+                  'reference' => $ref, 'confirmed_at' => date('Y-m-d H:i:s')]);
 }
 
-function makeDeepLinks(string $qr, array $booking): array {
+/* ── Төлбөр дуусгах — atomic transaction ─────────────────────── */
+function _markComplete(PDO $db, int $pid, int $bid, string $tx, string $ref): void {
+    $db->beginTransaction();
+    try {
+        $db->prepare("UPDATE payments SET status='completed',
+            transaction_id=?, gateway_ref=?, paid_at=NOW(), updated_at=NOW()
+            WHERE id=? AND status != 'completed'")
+           ->execute([$tx, $ref, $pid]);
+
+        $db->prepare("UPDATE bookings SET status='confirmed', updated_at=NOW()
+                       WHERE id=? AND status IN ('pending','confirmed')")
+           ->execute([$bid]);
+
+        $db->prepare("UPDATE payments SET status='cancelled', updated_at=NOW()
+                       WHERE booking_id=? AND id != ? AND status IN ('pending','processing')")
+           ->execute([$bid, $pid]);
+
+        $db->commit();
+    } catch (\Throwable $e) {
+        $db->rollBack();
+        error_log('_markComplete error: ' . $e->getMessage());
+        throw $e;
+    }
+}
+
+/* ── QPay deep links ──────────────────────────────────────────── */
+function _deepLinks(string $qr): array {
     $e = urlencode($qr);
     return [
-        ['name' => 'Хаан Банк',    'logo' => '🏦', 'url' => "khanbank://q?qPay_QRcode=$e"],
-        ['name' => 'Голомт Банк',  'logo' => '🏛', 'url' => "golomtbank://q?qPay_QRcode=$e"],
-        ['name' => 'ТДБ Банк',     'logo' => '🏢', 'url' => "tdbbank://q?qPay_QRcode=$e"],
-        ['name' => 'Хас Банк',     'logo' => '🌟', 'url' => "xacbank://q?qPay_QRcode=$e"],
-        ['name' => 'Капитрон',     'logo' => '💠', 'url' => "capitronbank://q?qPay_QRcode=$e"],
-        ['name' => 'Most Money',   'logo' => '📱', 'url' => "mostmoney://q?qPay_QRcode=$e"],
+        ['name'=>'Хаан Банк',   'logo'=>'🏦','id'=>'khanbank',  'url'=>"khanbank://q?qPay_QRcode=$e"],
+        ['name'=>'Голомт Банк', 'logo'=>'🏛','id'=>'golomt',    'url'=>"golomtbank://q?qPay_QRcode=$e"],
+        ['name'=>'ТДБ Банк',    'logo'=>'🏢','id'=>'tdb',       'url'=>"tdbbank://q?qPay_QRcode=$e"],
+        ['name'=>'Хас Банк',    'logo'=>'🌟','id'=>'xac',       'url'=>"xacbank://q?qPay_QRcode=$e"],
+        ['name'=>'Капитрон',    'logo'=>'💠','id'=>'capitron',  'url'=>"capitronbank://q?qPay_QRcode=$e"],
+        ['name'=>'Most Money',  'logo'=>'📱','id'=>'mostmoney', 'url'=>"mostmoney://q?qPay_QRcode=$e"],
     ];
-}
-
-function getBankInfo(string $bank, array $booking): array {
-    $banks = [
-        'khanbank'   => ['name' => 'Хаан Банк',   'account' => '5000123456'],
-        'golomtbank' => ['name' => 'Голомт Банк',  'account' => '1200987654'],
-        'tdbbank'    => ['name' => 'ТДБ Банк',     'account' => '4001234567'],
-    ];
-    $info = $banks[$bank] ?? $banks['khanbank'];
-    return array_merge($info, ['owner' => 'МонголHotels ХХК',
-                                'reference' => $booking['booking_code'],
-                                'amount' => $booking['total_price']]);
 }
 
 // ══════════════════════════════════════════════════════════════════

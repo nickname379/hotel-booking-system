@@ -810,134 +810,293 @@ async function proceedPay(){
     const d=await api('init_payment',{},{booking_id:G.bk.booking_id,method:G.pay.method});
     if(!d.success){ toast(d.error||'Алдаа','e'); btnL(btn,false); return; }
     G.pay.pid=d.payment_id;
+    G.pay._sandbox=!!d.sandbox;
     renderPayUI(G.pay.method,d);
   }catch{
-    // Demo fallback
-    G.pay.pid=Math.floor(Math.random()*90000)+10000;
-    renderPayUI(G.pay.method,{amount:G.bk.total_price,qr_text:'QPay_DEMO_'+G.bk.booking_code,sandbox:true,bank_info:getBankInfoDemo(G.pay.method)});
+    // PHP сервер байхгүй — бүрэн demo горим
+    G.pay.pid='demo_'+Date.now();
+    G.pay._sandbox=true;
+    const demoData={
+      amount:G.bk.total_price,
+      qr_text:'QPay_'+G.bk.booking_code+'_DEMO',
+      sandbox:true,
+      deep_links:makeDeepLinks(G.bk.booking_code),
+      expires_in:1800,
+      bank_info:getBankInfoDemo(G.pay.method),
+      reference:G.bk.booking_code,
+    };
+    renderPayUI(G.pay.method,demoData);
   }finally{ btnL(btn,false); }
 }
 
 function renderPayUI(method,d){
   const amt=d.amount||G.bk.total_price;
+  G.pay._sandbox=!!d.sandbox;
 
   if(method==='qpay'){
     payStep('ps-qpay');
     $('qamt').textContent=fmt(amt);
+
+    // QR код зурах
     const cv=$('qr-cv');
+    const qrTxt=d.qr_text||('QPay_'+G.bk.booking_code);
     if(typeof QRCode!=='undefined'){
       try{
-        QRCode.toCanvas(cv,d.qr_text||('QPay_'+G.bk.booking_code),{width:180,margin:2,color:{dark:'#000',light:'#fff'}},
-          err=>{ if(err) renderFallbackQR(cv,d.qr_text); });
-      }catch{ renderFallbackQR(cv,d.qr_text); }
-    }else{ renderFallbackQR(cv,d.qr_text); }
+        QRCode.toCanvas(cv,qrTxt,{width:180,margin:2,color:{dark:'#000000',light:'#ffffff'}},
+          err=>{ if(err) renderFallbackQR(cv,qrTxt); });
+      }catch{ renderFallbackQR(cv,qrTxt); }
+    }else{ renderFallbackQR(cv,qrTxt); }
 
+    // Deep links
     const links=d.deep_links||makeDeepLinks(G.bk.booking_code);
-    $('blinks').innerHTML=links.map(b=>`<a class="blink" href="${b.url}"><span class="blink-ic">${b.logo}</span><span class="blink-n">${b.name}</span></a>`).join('');
+    $('blinks').innerHTML=links.map(b=>`
+      <a class="blink" href="${b.url}" onclick="trackBankOpen('${b.id||b.name}')">
+        <span class="blink-ic">${b.logo}</span>
+        <span class="blink-n">${b.name}</span>
+      </a>`).join('');
+
+    // Sandbox мэдэгдэл
+    if(d.sandbox){
+      const statusEl=document.querySelector('#ps-qpay .pstatus');
+      if(statusEl) statusEl.innerHTML=`<div class="spin" style="width:15px;height:15px"></div><span style="color:var(--gold)">Demo горим — "Төлбөр Шалгах" дарж дуусгана уу</span>`;
+    }
+
+    // Polling эхлүүлэх (7 секунд тутам, max 25 удаа = ~3 мин)
     clearInterval(G.pay._poll);
-    G.pay._poll=setInterval(pollQPay,7000);
+    G.pay._pollCount=0;
+    G.pay._poll=setInterval(()=>{
+      G.pay._pollCount++;
+      if(G.pay._pollCount>25){ clearInterval(G.pay._poll); showQPayExpired(); return; }
+      pollQPay();
+    },7000);
+
+    // Expire countdown харуулах (30 мин)
+    startQPayTimer(d.expires_in||1800);
 
   }else if(['khanbank','golomtbank','tdbbank'].includes(method)){
     payStep('ps-bank');
     const bi=d.bank_info||getBankInfoDemo(method);
     $('binfo').innerHTML=`
-      <div class="bi-row"><span class="bi-l">Банк</span><span class="bi-v"><strong>${bi.name||'—'}</strong></span></div>
-      <div class="bi-row"><span class="bi-l">Дансны дугаар</span><span class="bi-v"><strong style="font-family:'DM Mono',monospace;font-size:16px">${bi.account||'—'}</strong><button class="copy-btn" onclick="cp('${bi.account}')">📋 Хуулах</button></span></div>
-      <div class="bi-row"><span class="bi-l">Хүлээн авагч</span><span class="bi-v">${bi.owner||'МонголHotels ХХК'}</span></div>
-      <div class="bi-row"><span class="bi-l">Гүйлгээний утга</span><span class="bi-v"><strong style="font-family:'DM Mono',monospace;color:var(--gold)">${bi.reference||G.bk.booking_code}</strong><button class="copy-btn" onclick="cp('${bi.reference||G.bk.booking_code}')">📋 Хуулах</button></span></div>
-      <div class="bi-row"><span class="bi-l">Дүн</span><span class="bi-v" style="color:var(--gold);font-weight:700;font-size:18px">${fmt(amt)}</span></div>
-      <div class="alert al-i" style="margin-top:14px">⚠️ <strong>Чухал:</strong> Гүйлгээний утгад захиалгын кодоо <strong>заавал</strong> бичнэ үү.</div>`;
+      <div class="bi-row">
+        <span class="bi-l">Банк</span>
+        <span class="bi-v"><strong>${bi.name||'—'}</strong></span>
+      </div>
+      <div class="bi-row">
+        <span class="bi-l">Дансны дугаар</span>
+        <span class="bi-v">
+          <strong style="font-family:'DM Mono',monospace;font-size:17px;letter-spacing:1px">${bi.account||'—'}</strong>
+          <button class="copy-btn" onclick="cp('${bi.account}')">📋 Хуулах</button>
+        </span>
+      </div>
+      <div class="bi-row">
+        <span class="bi-l">Хүлээн авагч</span>
+        <span class="bi-v">${bi.owner||'МонголHotels ХХК'}</span>
+      </div>
+      <div class="bi-row">
+        <span class="bi-l">Гүйлгээний утга</span>
+        <span class="bi-v">
+          <strong style="font-family:'DM Mono',monospace;color:var(--gold);font-size:16px">${bi.reference||G.bk.booking_code}</strong>
+          <button class="copy-btn" onclick="cp('${bi.reference||G.bk.booking_code}')">📋 Хуулах</button>
+        </span>
+      </div>
+      <div class="bi-row">
+        <span class="bi-l">Дүн</span>
+        <span class="bi-v" style="color:var(--gold);font-weight:700;font-size:20px">${fmt(amt)}</span>
+      </div>
+      <div class="alert al-e" style="margin-top:16px;flex-direction:column;gap:6px">
+        <div>⚠️ <strong>ЧУХАЛ:</strong> Гүйлгээний утгад <strong style="font-family:'DM Mono',monospace;color:var(--gold)">${bi.reference||G.bk.booking_code}</strong> заавал бичнэ үү.</div>
+        <div style="font-size:11px;color:var(--mist)">Утга буруу бол захиалга автоматаар баталгаажихгүй.</div>
+      </div>`;
 
   }else if(['socialpay','monpay'].includes(method)){
     payStep('ps-mobile');
     const isSP=method==='socialpay';
+    const ref=d.reference||G.bk.booking_code;
     $('mob-ic').textContent=isSP?'💬':'📲';
     $('mob-amt').textContent=fmt(amt);
     $('mob-desc').innerHTML=`
-      <div style="margin-bottom:16px;font-size:13px;color:var(--text)">${isSP?'<strong>Khan Bank SocialPay</strong>':'<strong>MonPay (Most Money)</strong>'} аппыг нээнэ үү</div>
+      <div style="margin-bottom:16px;font-size:13px;color:var(--text)">
+        ${isSP?'<strong>Khan Bank SocialPay</strong>':'<strong>MonPay (Most Money)</strong>'} аппыг нээнэ үү
+      </div>
       <div class="pay-steps">
         <div class="ps-item"><span class="ps-num">1</span> Апп нээж <strong>"Мерчант"</strong> хэсэгт орно</div>
         <div class="ps-item"><span class="ps-num">2</span> <strong>MONGOHOTELS</strong> хайж олно</div>
         <div class="ps-item"><span class="ps-num">3</span> Дүн: <strong style="color:var(--gold)">${fmt(amt)}</strong> оруулж төлнө</div>
-        <div class="ps-item"><span class="ps-num">4</span> Утга: <strong style="font-family:'DM Mono',monospace;color:var(--gold)">${G.bk.booking_code}</strong><button class="copy-btn" style="margin-left:6px" onclick="cp('${G.bk.booking_code}')">📋</button></div>
+        <div class="ps-item">
+          <span class="ps-num">4</span>
+          Утга: <strong style="font-family:'DM Mono',monospace;color:var(--gold)">${ref}</strong>
+          <button class="copy-btn" style="margin-left:6px" onclick="cp('${ref}')">📋</button>
+        </div>
       </div>`;
 
   }else{
+    // Cash / Card
     payStep('ps-onsite');
     const isCash=method==='cash';
     $('on-ic').textContent=isCash?'💵':'💳';
     $('on-amt').textContent=fmt(amt);
     $('on-desc').innerHTML=`
-      <div style="margin-bottom:16px;font-size:13px;color:var(--text)">Буудалд ирэхдээ хүлээн авах ширээнд доорх мэдээллийг өгнө үү:</div>
-      <div class="pay-steps">
-        <div class="ps-item"><span class="ps-num">1</span> Захиалгын код: <strong style="font-family:'DM Mono',monospace;color:var(--gold)">${G.bk.booking_code}</strong><button class="copy-btn" style="margin-left:6px" onclick="cp('${G.bk.booking_code}')">📋</button></div>
-        <div class="ps-item"><span class="ps-num">2</span> ${isCash?'Бэлэн мөнгө':'Банкны карт (Visa, MC, UnionPay)'}: <strong style="color:var(--gold)">${fmt(amt)}</strong></div>
-        <div class="ps-item"><span class="ps-num">3</span> Check-in цаг: <strong>${G.hotel?.check_in_time||'14:00'}</strong></div>
+      <div style="margin-bottom:16px;font-size:13px;color:var(--text)">
+        Буудалд ирэхдээ хүлээн авах ширээнд доорх мэдээллийг өгнө үү:
       </div>
-      <div class="alert al-g" style="margin-top:14px">ℹ️ Захиалга баталгаажсан. Захиалгын кодоо хадгалж аваарай.</div>`;
+      <div class="pay-steps">
+        <div class="ps-item">
+          <span class="ps-num">1</span>
+          Захиалгын код:
+          <strong style="font-family:'DM Mono',monospace;color:var(--gold)">${G.bk.booking_code}</strong>
+          <button class="copy-btn" style="margin-left:6px" onclick="cp('${G.bk.booking_code}')">📋</button>
+        </div>
+        <div class="ps-item">
+          <span class="ps-num">2</span>
+          ${isCash?'Бэлэн мөнгөөр':'Банкны картаар (Visa, MasterCard, UnionPay)'}:
+          <strong style="color:var(--gold)">${fmt(amt)}</strong>
+        </div>
+        <div class="ps-item">
+          <span class="ps-num">3</span>
+          Check-in цаг: <strong>${G.hotel?.check_in_time||'14:00'}</strong>
+        </div>
+      </div>
+      <div class="alert al-g" style="margin-top:14px">
+        ℹ️ Захиалга баталгаажсан. Захиалгын кодоо хадгалж аваарай.
+      </div>`;
   }
+}
+
+/* QPay countdown timer */
+function startQPayTimer(secs){
+  const el=document.querySelector('#ps-qpay .q-sub');
+  if(!el) return;
+  let s=secs;
+  clearInterval(G.pay._timer);
+  G.pay._timer=setInterval(()=>{
+    s--;
+    if(s<=0){ clearInterval(G.pay._timer); if(el) el.textContent='QR код хугацаа дуусав. Дахин эхлүүлнэ үү.'; return; }
+    const m=Math.floor(s/60), r=s%60;
+    if(el) el.textContent=`QPay QR код хүчинтэй: ${m}:${String(r).padStart(2,'0')} үлдсэн`;
+  },1000);
+}
+
+function showQPayExpired(){
+  const statusEl=document.querySelector('#ps-qpay .pstatus');
+  if(statusEl) statusEl.innerHTML=`<span style="color:var(--amber)">⏰ Хугацаа дуусав. "Төлбөр Шалгах" дарна уу эсвэл дахин эхлүүлнэ үү.</span>`;
+}
+
+function trackBankOpen(bankId){
+  // Analytics hook (optional)
+  console.log('QPay bank app opened:', bankId);
 }
 
 function renderFallbackQR(cv,txt){
   cv.width=180; cv.height=180;
   const ctx=cv.getContext?.('2d'); if(!ctx) return;
   ctx.fillStyle='#fff'; ctx.fillRect(0,0,180,180);
-  ctx.fillStyle='#111'; ctx.font='bold 11px monospace'; ctx.textAlign='center';
-  ctx.fillText('QPay',90,80); ctx.fillText((txt||'').slice(0,20),90,96); ctx.fillText('Scan me',90,112);
+  // Draw simple grid pattern as placeholder
+  ctx.fillStyle='#222';
+  const s=6;
+  for(let i=0;i<30;i++) for(let j=0;j<30;j++) if(Math.random()>.55) ctx.fillRect(i*6,j*6,5,5);
+  ctx.fillStyle='#fff'; ctx.fillRect(54,54,72,72);
+  ctx.fillStyle='#111'; ctx.font='bold 10px monospace'; ctx.textAlign='center';
+  ctx.fillText('QPay',90,78); ctx.fillText('QR Demo',90,92); ctx.fillText(String(txt||'').slice(0,14),90,106);
 }
 
 async function pollQPay(){
   if(!G.pay.pid) return;
-  try{ const d=await api('check_payment',{payment_id:G.pay.pid}); if(d.paid){ clearInterval(G.pay._poll); paySuccess(); } }catch{}
+  // Sandbox/Demo горимд авто poll хийхгүй — "Шалгах" товч дарна
+  if(G.pay._sandbox) return;
+  try{
+    const d=await api('check_payment',{payment_id:G.pay.pid});
+    if(d.paid){ clearInterval(G.pay._poll); clearInterval(G.pay._timer); paySuccess(); }
+    else if(d.status==='expired'||d.status==='failed'||d.status==='cancelled'){
+      clearInterval(G.pay._poll); clearInterval(G.pay._timer);
+      showQPayExpired();
+    }
+  }catch{ /* Сүлжээний алдаа — дахин оролдоно */ }
 }
 
 async function chkNow(){
   if(!G.pay.pid){ toast('Төлбөрийн мэдээлэл алга','w'); return; }
   const btn=document.querySelector('.pchk'); btnL(btn,true,'Шалгаж байна...');
   try{
+    if(G.pay._sandbox){
+      // Sandbox/Demo горим — confirm дуудаж шууд баталгаажуулна
+      await api('confirm_payment',{},{
+        payment_id:G.pay.pid,
+        reference:'SANDBOX_'+Date.now(),
+        method:G.pay.method
+      }).catch(()=>{});
+      clearInterval(G.pay._poll); clearInterval(G.pay._timer);
+      paySuccess();
+      return;
+    }
     const d=await api('check_payment',{payment_id:G.pay.pid});
-    if(d.paid){ clearInterval(G.pay._poll); paySuccess(); }
-    else toast('Төлбөр бүртгэгдээгүй байна. QR кодоо скан хийсний дараа шалгана уу.','w',5000);
-  }catch{ toast('Demo горим — Амжилттай болсон гэж үзнэ','i'); paySuccess(); }
-  finally{ btnL(btn,false); }
+    if(d.paid){
+      clearInterval(G.pay._poll); clearInterval(G.pay._timer);
+      paySuccess();
+    }else{
+      toast('Төлбөр бүртгэгдээгүй байна. Банкны аппаас QR уншуулсны дараа шалгана уу.','w',5000);
+    }
+  }catch{
+    // PHP сервер байхгүй — demo горим
+    clearInterval(G.pay._poll); clearInterval(G.pay._timer);
+    paySuccess();
+  }finally{ btnL(btn,false); }
 }
 
 async function confirmBank(){
   const ref=($('bank-ref')?.value||'').trim();
   if(!ref){ toast('Гүйлгээний дугаараа оруулна уу','w'); return; }
   const btn=document.querySelector('#ps-bank .mbtn'); btnL(btn,true,'Баталгаажуулж байна...');
-  try{ await api('confirm_payment',{},{payment_id:G.pay.pid,reference:ref}); }catch{}
-  paySuccess(); btnL(btn,false);
+  try{
+    const d=await api('confirm_payment',{},{payment_id:G.pay.pid,reference:ref,method:G.pay.method});
+    if(d.success||d.already_paid) paySuccess();
+    else toast(d.error||'Алдаа гарлаа','e');
+  }catch{ paySuccess(); } // Demo
+  finally{ btnL(btn,false); }
 }
+
 async function confirmMob(){
-  const btn=document.querySelector('#ps-mobile .mbtn'); btnL(btn,true,'...');
-  try{ await api('confirm_payment',{},{payment_id:G.pay.pid,reference:'MOBILE'}); }catch{}
-  paySuccess(); btnL(btn,false);
+  const btn=document.querySelector('#ps-mobile .mbtn'); btnL(btn,true,'Баталгаажуулж байна...');
+  try{
+    const d=await api('confirm_payment',{},{payment_id:G.pay.pid,reference:'MOBILE_'+Date.now(),method:G.pay.method});
+    if(d.success||d.already_paid) paySuccess();
+    else toast(d.error||'Алдаа','e');
+  }catch{ paySuccess(); } // Demo
+  finally{ btnL(btn,false); }
 }
-function finishOn(){ paySuccess(); }
+
+function finishOn(){
+  // Cash/Card — захиалгыг баталгаажуулах (серверт)
+  api('confirm_payment',{},{payment_id:G.pay.pid,reference:'ONSITE_'+Date.now(),method:G.pay.method}).catch(()=>{});
+  paySuccess();
+}
 
 function paySuccess(){
   clearInterval(G.pay._poll);
+  clearInterval(G.pay._timer);
   $('s-code').textContent=G.bk.booking_code||'—';
   payStep('ps-succ');
   toast('Төлбөр амжилттай! Захиалга баталгаажлаа 🎉','s');
 }
 
 function makeDeepLinks(code){
-  const e=encodeURIComponent(code);
+  const e=encodeURIComponent('QPay_'+code);
   return[
-    {name:'Хаан Банк',logo:'🏦',url:`khanbank://q?qPay_QRcode=${e}`},
-    {name:'Голомт Банк',logo:'🏛',url:`golomtbank://q?qPay_QRcode=${e}`},
-    {name:'ТДБ Банк',logo:'🏢',url:`tdbbank://q?qPay_QRcode=${e}`},
-    {name:'Хас Банк',logo:'🌟',url:`xacbank://q?qPay_QRcode=${e}`},
-    {name:'Капитрон',logo:'💠',url:`capitronbank://q?qPay_QRcode=${e}`},
-    {name:'Most Money',logo:'📱',url:`mostmoney://q?qPay_QRcode=${e}`},
+    {name:'Хаан Банк',   logo:'🏦', id:'khanbank',  url:`khanbank://q?qPay_QRcode=${e}`},
+    {name:'Голомт Банк', logo:'🏛', id:'golomt',    url:`golomtbank://q?qPay_QRcode=${e}`},
+    {name:'ТДБ Банк',    logo:'🏢', id:'tdb',       url:`tdbbank://q?qPay_QRcode=${e}`},
+    {name:'Хас Банк',    logo:'🌟', id:'xac',       url:`xacbank://q?qPay_QRcode=${e}`},
+    {name:'Капитрон',    logo:'💠', id:'capitron',  url:`capitronbank://q?qPay_QRcode=${e}`},
+    {name:'Most Money',  logo:'📱', id:'mostmoney', url:`mostmoney://q?qPay_QRcode=${e}`},
   ];
 }
 
 function getBankInfoDemo(bank){
-  const b={khanbank:{name:'Хаан Банк',account:'5000-123456'},golomtbank:{name:'Голомт Банк',account:'1200-987654'},tdbbank:{name:'ТДБ Банк',account:'4001-234567'}};
-  return {...(b[bank]||b.khanbank), owner:'МонголHotels ХХК', reference:G.bk?.booking_code||'—'};
+  const map={
+    khanbank:   {name:'Хаан Банк',   account:'5000123456'},
+    golomtbank: {name:'Голомт Банк',  account:'1200987654'},
+    tdbbank:    {name:'ТДБ Банк',     account:'4001234567'},
+  };
+  return {...(map[bank]||map.khanbank), owner:'МонголHotels ХХК', reference:G.bk?.booking_code||'—'};
 }
 
 /* ════════════════════════ MY BOOKINGS ══════════════════════════════════ */
